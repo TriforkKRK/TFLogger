@@ -33,7 +33,7 @@
 // if not defined ASL_LEVEL_DEBUG is set on DEBUG and ASL_LEVEL_ERR on RELEASE.
 #ifndef TF_COMPILE_TIME_LOG_LEVEL
     #if DEBUG
-        #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_NOTICE
+        #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_DEBUG
     #else
         #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_ERR
     #endif
