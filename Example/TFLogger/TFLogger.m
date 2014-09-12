@@ -23,6 +23,34 @@
 
 #import "TFLogger.h"
 
+//  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
+//  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
+
+static void AddStderrOnce()
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        asl_add_log_file(NULL, STDERR_FILENO);  // we need to add the stderr as an output of the asl facility in order to see DEBUG logs in debuger
+    });
+}
+
+void _TFLog(int level, const char * file, int line, NSString *format, ...)
+{
+    AddStderrOnce();
+    
+    va_list argumentList;
+    va_start(argumentList, format);
+
+    NSString * path = [NSString stringWithUTF8String:file];
+    NSString * message = [[NSString alloc] initWithFormat:format
+                                                arguments:argumentList];
+    NSString * str = [NSString stringWithFormat:@"%@:%d - %@",[path lastPathComponent], line, message];
+    
+    asl_log(NULL, NULL, level, "%s", [str UTF8String]);
+    
+    va_end(argumentList);
+}
+
 int _extractLogLevelFromFormat(NSString *format)
 {
     if ([format rangeOfString:@"[m]"].location != NSNotFound) return ASL_LEVEL_EMERG;
@@ -30,102 +58,9 @@ int _extractLogLevelFromFormat(NSString *format)
     if ([format rangeOfString:@"[c]"].location != NSNotFound) return ASL_LEVEL_CRIT;
     if ([format rangeOfString:@"[e]"].location != NSNotFound) return ASL_LEVEL_ERR;
     if ([format rangeOfString:@"[w]"].location != NSNotFound) return ASL_LEVEL_WARNING;
-    if ([format rangeOfString:@"[n]"].location != NSNotFound) return ASL_LEVEL_ERR;
+    if ([format rangeOfString:@"[n]"].location != NSNotFound) return ASL_LEVEL_NOTICE;
     if ([format rangeOfString:@"[i]"].location != NSNotFound) return ASL_LEVEL_INFO;
     if ([format rangeOfString:@"[d]"].location != NSNotFound) return ASL_LEVEL_DEBUG;
     
     return ASL_LEVEL_DEBUG; // if not specified return the lowest log level - DEBUG
 }
-
-void NSLogToTFLoggerAdapter(NSString *format, ...) {
-    int LOG_LEVEL = _extractLogLevelFromFormat(format);
-    
-    va_list argumentList;
-    va_start(argumentList, format);
-    
-    // TODO: remove log level prefix from the parsed message
-    NSMutableString * message = [[NSMutableString alloc] initWithFormat:format
-                                                              arguments:argumentList];
-    
-    // TODO: can I remove switch ?
-    switch (LOG_LEVEL) {
-        case ASL_LEVEL_ERR:
-            TFLogError(message);
-            break;
-        case ASL_LEVEL_WARNING:
-            TFLogWarning(message);
-            break;
-            
-        case ASL_LEVEL_INFO:
-            TFLogInfo(message);
-            break;
-            
-        case ASL_LEVEL_DEBUG:
-            TFLogDebug(message);
-            break;
-            
-        default:
-            break;
-    }
-
-    va_end(argumentList);
-}
-
-
-//  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
-
-static void AddStderrOnce()
-{
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        asl_add_log_file(NULL, STDERR_FILENO);
-    });
-}
-
-
-// TODO: _CMD, __LINE
-
-#define __TF_MAKE_LOG_FUNCTION(LEVEL, NAME) \
-void NAME (NSString *format, ...) \
-{ \
-AddStderrOnce(); \
-va_list args; \
-va_start(args, format); \
-NSString *message = [[NSString alloc] initWithFormat:format arguments:args]; \
-asl_log(NULL, NULL, (LEVEL), "%s", [message UTF8String]); \
-va_end(args); \
-}
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_EMERG
-__TF_MAKE_LOG_FUNCTION(ASL_LEVEL_EMERG, TFLogEmergency)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_ALERT
-__TF_MAKE_LOG_FUNCTION(ASL_LEVEL_ALERT, TFLogAlert)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_CRIT
-__TF_MAKE_LOG_FUNCTION(ASL_LEVEL_CRIT, TFLogCritical)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_ERR
-__TF_MAKE_LOG_FUNCTION(ASL_LEVEL_ERR, TFLogError)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_WARNING
-__TF_MAKE_LOG_FUNCTION(ASL_LEVEL_WARNING, TFLogWarning)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_NOTICE
-__TF_MAKE_LOG_FUNCTION(ASL_LEVEL_NOTICE, TFLogNotice)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_INFO
-__TF_MAKE_LOG_FUNCTION(ASL_LEVEL_INFO, TFLogInfo)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_NOTICE
-__TF_MAKE_LOG_FUNCTION(ASL_LEVEL_DEBUG, TFLogDebug)
-#endif
-
-#undef __TF_MAKE_LOG_FUNCTION

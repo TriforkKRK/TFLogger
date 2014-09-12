@@ -25,14 +25,8 @@
 #import <Foundation/Foundation.h>
 #import "asl.h"
 
-// One can use NSLogToTFLoggerAdapter function to swizzle default NSLog behaviour. To do so include the following line is your source code:
-// #define NSLog(...) NSLogToASLAdapter(__VA_ARGS__)
-// this will cause the default NSLog statements to be treaten as asl logs with log level set to ASL_LEVEL_DEBUG instead of ASL_LEVEL_ERROR (which is a default for NSLog). Additionaly you can use visual log level formatting:
-// NSLog(@"[w] something") - ASL_LEVEL_WARN
-// NSLog(@"[d] debug")     - ASL_LEVEL_DEBUG
-// aso...
-
-void NSLogToTFLoggerAdapter(NSString *format, ...);
+// TODO: remove host info from logged message if possible
+// TODO: miliseconds in datetime
 
 // One can define TF_COMPILE_TIME_LOG_LEVEL to set compile time log levels
 // all the log operations with levels that are below this setting will be converted to NOOP
@@ -46,51 +40,78 @@ void NSLogToTFLoggerAdapter(NSString *format, ...);
 #endif
 
 #if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_EMERG
-void TFLogEmergency(NSString *format, ...);
+#define TFLogEmergency(format, ...) _TFLog(ASL_LEVEL_EMERG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+
 #else
 #define TFLogEmergency(...)
 #endif
 
 #if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_ALERT
-void TFLogAlert(NSString *format, ...);
+#define TFLogAlert(format, ...) _TFLog(ASL_LEVEL_ALERT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 #else
 #define TFLogAlert(...)
 #endif
 
 #if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_CRIT
-void TFLogCritical(NSString *format, ...);
+#define TFLogCritical(format, ...) _TFLog(ASL_LEVEL_CRIT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 #else
 #define TFLogCritical(...)
 #endif
 
 #if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_ERR
-void TFLogError(NSString *format, ...);
+#define TFLogError(format, ...) _TFLog(ASL_LEVEL_ERR, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 #else
 #define TFLogError(...)
 #endif
 
 #if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_WARNING
-void TFLogWarning(NSString *format, ...);
+#define TFLogWarning(format, ...) _TFLog(ASL_LEVEL_WARNING, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 #else
 #define TFLogWarning(...)
 #endif
 
 #if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_NOTICE
-void TFLogNotice(NSString *format, ...);
+#define TFLogNotice(format, ...) _TFLog(ASL_LEVEL_NOTICE, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 #else
 #define TFLogNotice(...)
 #endif
 
 #if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_INFO
-void TFLogInfo(NSString *format, ...);
+#define TFLogInfo(format, ...) _TFLog(ASL_LEVEL_INFO, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 #else
 #define TFLogInfo(...)
 #endif
 
 #if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_DEBUG
-void TFLogDebug(NSString *format, ...);
+#define TFLogDebug(format, ...) _TFLog(ASL_LEVEL_DEBUG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 #else
 #define TFLogDebug(...)
 #endif
 
 
+
+// One can use NSLogToTFLoggerAdapter function to swizzle default NSLog behaviour. To do so include the following line is your source code:
+// #define NSLog(...) NSLogToASLAdapter(__VA_ARGS__)
+// this will cause the default NSLog statements to be treaten as asl logs with log level set to ASL_LEVEL_DEBUG instead of ASL_LEVEL_ERROR (which is a default for NSLog). Additionaly you can use visual log level formatting with the following syntax:
+
+// NSLog(@"[m] something) - ASL_LEVEL_EMERG;
+// NSLog(@"[a] something) - ASL_LEVEL_ALERT;
+// NSLog(@"[c] something) - ASL_LEVEL_CRIT;
+// NSLog(@"[e] something) - ASL_LEVEL_ERR;
+// NSLog(@"[w] something) - ASL_LEVEL_WARNING;
+// NSLog(@"[n] something) - ASL_LEVEL_NOTICE;
+// NSLog(@"[i] something) - ASL_LEVEL_INFO;
+// NSLog(@"[d] something) - ASL_LEVEL_DEBUG;
+
+#define NSLogToTFLoggerAdapter(format, ...) { \
+    int LOG_LEVEL = _extractLogLevelFromFormat(format); \
+    \
+    _TFLog(LOG_LEVEL, __FILE__, __LINE__, (format), ##__VA_ARGS__); \
+}
+
+
+
+// Private
+
+int _extractLogLevelFromFormat(NSString *format);
+void _TFLog(int level, const char * file, int line, NSString *format, ...);
