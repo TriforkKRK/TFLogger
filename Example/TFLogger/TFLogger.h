@@ -22,17 +22,17 @@
  */
 
 
-@import Foundation;
+#import <Foundation/Foundation.h>
 #import "asl.h"
 
-// One can use NSLogToASLAdapter function to swizzle default NSLog behaviour. To do so include the following line is your source code:
+// One can use NSLogToTFLoggerAdapter function to swizzle default NSLog behaviour. To do so include the following line is your source code:
 // #define NSLog(...) NSLogToASLAdapter(__VA_ARGS__)
 // this will cause the default NSLog statements to be treaten as asl logs with log level set to ASL_LEVEL_DEBUG instead of ASL_LEVEL_ERROR (which is a default for NSLog). Additionaly you can use visual log level formatting:
 // NSLog(@"[w] something") - ASL_LEVEL_WARN
 // NSLog(@"[d] debug")     - ASL_LEVEL_DEBUG
 // aso...
 
-void NSLogToASLAdapter(NSString *format, ...);
+void NSLogToTFLoggerAdapter(NSString *format, ...);
 
 // One can define TF_COMPILE_TIME_LOG_LEVEL to set compile time log levels
 // all the log operations with levels that are below this setting will be converted to NOOP

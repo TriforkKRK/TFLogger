@@ -9,7 +9,7 @@
 #import "TFAppDelegate.h"
 #import "TFLogger.h"
 
-#define NSLog(...) NSLogToASLAdapter(__VA_ARGS__)
+#define NSLog(...) NSLogToTFLoggerAdapter(__VA_ARGS__)
 
 @implementation TFAppDelegate
 
