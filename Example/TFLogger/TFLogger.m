@@ -25,16 +25,19 @@
 
 int _extractLogLevelFromFormat(NSString *format)
 {
-    // TODO: all log levels
+    if ([format rangeOfString:@"[m]"].location != NSNotFound) return ASL_LEVEL_EMERG;
+    if ([format rangeOfString:@"[a]"].location != NSNotFound) return ASL_LEVEL_ALERT;
+    if ([format rangeOfString:@"[c]"].location != NSNotFound) return ASL_LEVEL_CRIT;
     if ([format rangeOfString:@"[e]"].location != NSNotFound) return ASL_LEVEL_ERR;
     if ([format rangeOfString:@"[w]"].location != NSNotFound) return ASL_LEVEL_WARNING;
+    if ([format rangeOfString:@"[n]"].location != NSNotFound) return ASL_LEVEL_ERR;
     if ([format rangeOfString:@"[i]"].location != NSNotFound) return ASL_LEVEL_INFO;
     if ([format rangeOfString:@"[d]"].location != NSNotFound) return ASL_LEVEL_DEBUG;
     
-    return ASL_LEVEL_DEBUG; // by default it's debug
+    return ASL_LEVEL_DEBUG; // if not specified return the lowest log level - DEBUG
 }
 
-void NSLogToASLAdapter(NSString *format, ...) {
+void NSLogToTFLoggerAdapter(NSString *format, ...) {
     int LOG_LEVEL = _extractLogLevelFromFormat(format);
     
     va_list argumentList;
