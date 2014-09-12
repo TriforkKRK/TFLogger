@@ -36,6 +36,8 @@ static void AddStderrOnce()
 
 void _TFLog(int level, const char * file, int line, NSString *format, ...)
 {
+    if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
+    
     AddStderrOnce();
     
     va_list argumentList;

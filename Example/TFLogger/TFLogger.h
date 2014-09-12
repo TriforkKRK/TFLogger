@@ -33,61 +33,21 @@
 // if not defined ASL_LEVEL_DEBUG is set on DEBUG and ASL_LEVEL_ERR on RELEASE.
 #ifndef TF_COMPILE_TIME_LOG_LEVEL
     #if DEBUG
-        #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_DEBUG
+        #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_NOTICE
     #else
         #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_ERR
     #endif
 #endif
 
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_EMERG
-#define TFLogEmergency(format, ...) _TFLog(ASL_LEVEL_EMERG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 
-#else
-#define TFLogEmergency(...)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_ALERT
-#define TFLogAlert(format, ...) _TFLog(ASL_LEVEL_ALERT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#else
-#define TFLogAlert(...)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_CRIT
-#define TFLogCritical(format, ...) _TFLog(ASL_LEVEL_CRIT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#else
-#define TFLogCritical(...)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_ERR
-#define TFLogError(format, ...) _TFLog(ASL_LEVEL_ERR, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#else
-#define TFLogError(...)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_WARNING
-#define TFLogWarning(format, ...) _TFLog(ASL_LEVEL_WARNING, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#else
-#define TFLogWarning(...)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_NOTICE
-#define TFLogNotice(format, ...) _TFLog(ASL_LEVEL_NOTICE, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#else
-#define TFLogNotice(...)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_INFO
-#define TFLogInfo(format, ...) _TFLog(ASL_LEVEL_INFO, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#else
-#define TFLogInfo(...)
-#endif
-
-#if TF_COMPILE_TIME_LOG_LEVEL >= ASL_LEVEL_DEBUG
-#define TFLogDebug(format, ...) _TFLog(ASL_LEVEL_DEBUG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#else
-#define TFLogDebug(...)
-#endif
-
+#define TFLogEmergency(format, ...)     _TFLog(ASL_LEVEL_EMERG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogAlert(format, ...)         _TFLog(ASL_LEVEL_ALERT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogCritical(format, ...)      _TFLog(ASL_LEVEL_CRIT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogError(format, ...)         _TFLog(ASL_LEVEL_ERR, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogWarning(format, ...)       _TFLog(ASL_LEVEL_WARNING, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogNotice(format, ...)        _TFLog(ASL_LEVEL_NOTICE, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogInfo(format, ...)          _TFLog(ASL_LEVEL_INFO, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogDebug(format, ...)         _TFLog(ASL_LEVEL_DEBUG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
 
 
 // One can use NSLogToTFLoggerAdapter function to swizzle default NSLog behaviour. To do so include the following line is your source code:
