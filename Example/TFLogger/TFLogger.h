@@ -105,8 +105,8 @@
 
 #define NSLogToTFLoggerAdapter(format, ...) { \
     int LOG_LEVEL = _extractLogLevelFromFormat(format); \
-    \
-    _TFLog(LOG_LEVEL, __FILE__, __LINE__, (format), ##__VA_ARGS__); \
+    NSString *FRMT = _formatWithoutVisualLogLevelPrefix(format);\
+    _TFLog(LOG_LEVEL, __FILE__, __LINE__, FRMT, ##__VA_ARGS__); \
 }
 
 
@@ -114,4 +114,5 @@
 // Private
 
 int _extractLogLevelFromFormat(NSString *format);
+NSString * _formatWithoutVisualLogLevelPrefix(NSString *format);
 void _TFLog(int level, const char * file, int line, NSString *format, ...);

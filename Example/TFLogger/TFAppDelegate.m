@@ -24,7 +24,7 @@
     TFLogInfo(@"info");
     TFLogDebug(@"debug");
     
-    NSLog(@"[w] nslog"); // on a device log it is "error"
+    NSLog(@"[w]   nslog"); // on a device log it is "error"
     
     // Override point for customization after application launch.
     return YES;

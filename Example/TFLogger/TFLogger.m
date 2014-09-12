@@ -64,3 +64,19 @@ int _extractLogLevelFromFormat(NSString *format)
     
     return ASL_LEVEL_DEBUG; // if not specified return the lowest log level - DEBUG
 }
+
+NSString * _formatWithoutVisualLogLevelPrefix(NSString *format)
+{
+    NSString * unprefixedFormat = format;
+    NSUInteger loc = [format rangeOfString:@"]"].location;
+    if (loc != NSNotFound) {
+        unprefixedFormat = [format substringFromIndex:loc+1];
+    }
+    
+    NSMutableCharacterSet * whitespaceSet = [NSMutableCharacterSet whitespaceCharacterSet];
+    loc = [unprefixedFormat rangeOfCharacterFromSet:[whitespaceSet invertedSet]].location;
+
+    if (loc == NSNotFound) return unprefixedFormat;
+    
+    return [unprefixedFormat substringFromIndex:loc];
+}
