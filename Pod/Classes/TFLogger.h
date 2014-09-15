@@ -25,7 +25,7 @@
 #import <Foundation/Foundation.h>
 #import "asl.h"
 
-typedef void (^TFLoggerHandler)(int level, NSString * msg);
+typedef void (^TFLoggerHandler)(int level, NSString *location,  NSString *msg);
 
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();

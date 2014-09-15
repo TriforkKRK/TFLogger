@@ -28,7 +28,7 @@
 //  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
 
 NSMutableArray* _loggerHandlers();
-NSString * _nslogFormattedMessage(NSString * msg);
+NSString * _nslogFormattedPrefix();
 NSString * _levelDescription(int level);
 
 void TFLoggerAddHandler(TFLoggerHandler handler)
@@ -46,8 +46,9 @@ void TFLoggerRemoveAllHandlers()
 
 TFLoggerHandler TFStdErrLogHandler()
 {
-    return ^(int level, NSString *msg) {
-        NSString * formattedMsg = _nslogFormattedMessage(msg);
+    return ^(int level, NSString *location, NSString *msg) {
+        NSString * prefix = _nslogFormattedPrefix();
+        NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@ <%@> %@", prefix, location, _levelDescription(level), msg];
         CFStringRef s = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
         CFShow(s);
         CFRelease(s);
@@ -57,9 +58,10 @@ TFLoggerHandler TFStdErrLogHandler()
 // http://stackoverflow.com/questions/13473864/use-asl-to-log-to-console-app
 TFLoggerHandler TFASLLogHandler()
 {
-    return ^(int level, NSString *msg) {
+    return ^(int level, NSString *location, NSString *msg) {
         // TODO: hange log level saved on device
-        asl_log(NULL, NULL, level, "%s", [msg UTF8String]);
+        NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@", location, msg];
+        asl_log(NULL, NULL, level, "%s", [formattedMsg UTF8String]);
     };
 }
 
@@ -77,14 +79,12 @@ void _TFLog(int level, const char * file, int line, NSString *format, ...)
     NSString * path = [NSString stringWithUTF8String:file];
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
-    
-    NSString * str = [NSString stringWithFormat:@"%@:%d <%@> %@",[path lastPathComponent], line, _levelDescription(level), message];
-    
-    va_end(argumentList);
+    NSString * location = [NSString stringWithFormat:@"%@:%d",[path lastPathComponent], line];
     
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) {
-        handler(level, str);
+        handler(level, location, message);
     }
+    va_end(argumentList);
 }
 
 NSString * _levelDescription(int level)
@@ -119,7 +119,7 @@ NSString * _levelDescription(int level)
     }
 }
 
-NSString * _nslogFormattedMessage(NSString * msg)
+NSString * _nslogFormattedPrefix()
 {
     NSDate * d = [NSDate date];
     time_t time = [d timeIntervalSince1970];
@@ -134,7 +134,7 @@ NSString * _nslogFormattedMessage(NSString * msg)
     NSString * appName = [[NSProcessInfo processInfo] processName];
     NSString * processID = [NSString stringWithFormat:@"%i", (int)getpid()];
     NSString * tid = [NSString stringWithFormat:@"%x", pthread_mach_thread_np(pthread_self())];
-    return [NSString stringWithFormat:@"%@:%03d %@[%@:%@] %@", dateStr, milliseconds, appName, processID, tid, msg]; // timestamp, appName, processID, threadID, logMsg
+    return [NSString stringWithFormat:@"%@:%03d %@[%@:%@]", dateStr, milliseconds, appName, processID, tid]; // timestamp, appName, processID, threadID
 }
 
 NSMutableArray *_loggerHandlers()
