@@ -8,13 +8,23 @@
 
 #import "TFAppDelegate.h"
 #import "TFLogger.h"
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
-#define NSLog(...) NSLogToTFLoggerAdapter(__VA_ARGS__)
+//#define NSLog(...) NSLogToTFLoggerAdapter(__VA_ARGS__)
+
+//static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
 @implementation TFAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+//    [DDLog addLogger:[DDASLLogger sharedInstance]];
+//    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+//    
+//    DDLogError(@"dd error");
+ 
+//    TFAddLoggerClousure(ASLClousure(), 1);
+    
     TFLogEmergency(@"emergency");
     TFLogAlert(@"alert");
     TFLogCritical(@"critical");

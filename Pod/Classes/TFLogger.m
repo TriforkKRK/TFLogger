@@ -22,35 +22,75 @@
  */
 
 #import "TFLogger.h"
-
+#import <CoreFoundation/CoreFoundation.h>
 //  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
 //  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
 
-static void AddStderrOnce()
+NSMutableArray* _loggerHandlers();
+
+void TFLoggerAddHandler(TFLoggerHandler handler)
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        asl_add_log_file(NULL, STDERR_FILENO);  // we need to add the stderr as an output of the asl facility in order to see DEBUG logs in debuger
-    });
+    NSMutableArray * loggers = _loggerHandlers();
+    [loggers addObject:[handler copy]];
 }
+
+void TFLoggerRemoveAllHandlers()
+{
+    [_loggerHandlers() removeAllObjects];
+}
+
+#pragma mark - Default Log Handlers
+
+TFLoggerHandler TFStdErrLogHandler()
+{
+    return ^(int level, NSString *msg) {
+        // TODO: format "%s %s[%i:%s] %s", timestamp, appName, processID, threadID, logMsg
+        CFStringRef s = CFStringCreateWithCString(NULL, [msg UTF8String], kCFStringEncodingUTF8);
+        CFShow(s);
+        // TODO: release
+    };
+}
+
+// http://stackoverflow.com/questions/13473864/use-asl-to-log-to-console-app
+TFLoggerHandler TFASLLogHandler()
+{
+    return ^(int level, NSString *msg) {
+        // TODO: hange log level saved on device
+        asl_log(NULL, NULL, level, "%s", [msg UTF8String]);
+    };
+}
+
+
+#pragma mark - Private
 
 void _TFLog(int level, const char * file, int line, NSString *format, ...)
 {
+    // TODO: ??
     if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
-    
-    AddStderrOnce();
     
     va_list argumentList;
     va_start(argumentList, format);
-
+    
     NSString * path = [NSString stringWithUTF8String:file];
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
     NSString * str = [NSString stringWithFormat:@"%@:%d - %@",[path lastPathComponent], line, message];
     
-    asl_log(NULL, NULL, level, "%s", [str UTF8String]);
-    
     va_end(argumentList);
+    
+    for (TFLoggerHandler handler in [_loggerHandlers() copy]) {
+        handler(level, str);
+    }
+}
+
+NSMutableArray *_loggerHandlers()
+{
+    static NSMutableArray * blocks = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        blocks = [NSMutableArray arrayWithObject:TFStdErrLogHandler()]; // by default all logs are sent to StdErr to be displayed in XCode debug console
+    });
+    return blocks;
 }
 
 int _extractLogLevelFromFormat(NSString *format)

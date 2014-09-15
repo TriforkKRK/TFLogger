@@ -1,17 +1,29 @@
 PODS:
+  - CocoaLumberjack (2.0.0-beta):
+    - CocoaLumberjack/CLI
+    - CocoaLumberjack/Core
+    - CocoaLumberjack/Extensions
+  - CocoaLumberjack/CLI (2.0.0-beta):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Core (2.0.0-beta)
+  - CocoaLumberjack/Extensions (2.0.0-beta):
+    - CocoaLumberjack/Core
   - Kiwi (2.3.0)
   - TFLogger (0.0.1)
 
 DEPENDENCIES:
+  - CocoaLumberjack
   - Kiwi
   - TFLogger (from `../`)
+  - TFLogger (from `../TFLogger.podspec`)
 
 EXTERNAL SOURCES:
   TFLogger:
     :path: ../
 
 SPEC CHECKSUMS:
+  CocoaLumberjack: aadc76d7bd6c839ca84b38ed50cbf89d7cf8c693
   Kiwi: 54bece5b35564d9b8e03c608d926f1a22fcfc589
-  TFLogger: e97acdeeb3ddcf11a5eb3cf5012334ba4f22ee56
+  TFLogger: 2a95bc0e106ffab2ab9857d419655824455e63df
 
 COCOAPODS: 0.33.1

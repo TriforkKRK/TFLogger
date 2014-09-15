@@ -24,7 +24,7 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		6DEA34309091465BA7693D8D /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAF799C8EC1C4C7784E098F1 /* libPods-Tests.a */; };
-		AFEB9A3F19C1EAB800AA5E2D /* TFLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEB9A3E19C1EAB800AA5E2D /* TFLogger.m */; };
+		AFB7258B19C6DFF200B14A76 /* TFLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB7258A19C6DFF200B14A76 /* TFLogger.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,8 +65,8 @@
 		6D0881C505644111A6EC657B /* Pods-TFLogger.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TFLogger.xcconfig"; path = "Pods/Pods-TFLogger.xcconfig"; sourceTree = "<group>"; };
 		877F543C4F6E495DBB17E9BF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		88897E9E8BF14E05BC928ACD /* Pods-Tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.xcconfig"; path = "Pods/Pods-Tests.xcconfig"; sourceTree = "<group>"; };
-		AFEB9A3D19C1EAB800AA5E2D /* TFLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFLogger.h; sourceTree = "<group>"; };
-		AFEB9A3E19C1EAB800AA5E2D /* TFLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TFLogger.m; sourceTree = "<group>"; };
+		AFB7258919C6DFF200B14A76 /* TFLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TFLogger.h; path = ../../Pod/Classes/TFLogger.h; sourceTree = "<group>"; };
+		AFB7258A19C6DFF200B14A76 /* TFLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TFLogger.m; path = ../../Pod/Classes/TFLogger.m; sourceTree = "<group>"; };
 		EAF799C8EC1C4C7784E098F1 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -134,8 +134,8 @@
 		6003F593195388D20070C39A /* TFLogger */ = {
 			isa = PBXGroup;
 			children = (
-				AFEB9A3D19C1EAB800AA5E2D /* TFLogger.h */,
-				AFEB9A3E19C1EAB800AA5E2D /* TFLogger.m */,
+				AFB7258919C6DFF200B14A76 /* TFLogger.h */,
+				AFB7258A19C6DFF200B14A76 /* TFLogger.m */,
 				6003F59C195388D20070C39A /* TFAppDelegate.h */,
 				6003F59D195388D20070C39A /* TFAppDelegate.m */,
 				6003F59F195388D20070C39A /* Main_iPhone.storyboard */,
@@ -357,7 +357,7 @@
 				6003F59E195388D20070C39A /* TFAppDelegate.m in Sources */,
 				6003F5A7195388D20070C39A /* TFViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
-				AFEB9A3F19C1EAB800AA5E2D /* TFLogger.m in Sources */,
+				AFB7258B19C6DFF200B14A76 /* TFLogger.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
