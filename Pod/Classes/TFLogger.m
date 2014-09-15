@@ -29,6 +29,7 @@
 
 NSMutableArray* _loggerHandlers();
 NSString * _nslogFormattedMessage(NSString * msg);
+NSString * _levelDescription(int level);
 
 void TFLoggerAddHandler(TFLoggerHandler handler)
 {
@@ -77,13 +78,44 @@ void _TFLog(int level, const char * file, int line, NSString *format, ...)
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
     
-    // TODO: level
-    NSString * str = [NSString stringWithFormat:@"%@:%d - %@",[path lastPathComponent], line, message];
+    NSString * str = [NSString stringWithFormat:@"%@:%d <%@> %@",[path lastPathComponent], line, _levelDescription(level), message];
     
     va_end(argumentList);
     
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) {
         handler(level, str);
+    }
+}
+
+NSString * _levelDescription(int level)
+{
+    switch (level) {
+        case ASL_LEVEL_DEBUG:
+            return @ASL_STRING_DEBUG;
+
+        case ASL_LEVEL_INFO:
+            return @ASL_STRING_INFO;
+        
+        case ASL_LEVEL_NOTICE:
+            return @ASL_STRING_NOTICE;
+            
+        case ASL_LEVEL_WARNING:
+            return @ASL_STRING_WARNING;
+            
+        case ASL_LEVEL_ERR:
+            return @ASL_STRING_ERR;
+            
+        case ASL_LEVEL_CRIT:
+            return @ASL_STRING_CRIT;
+            
+        case ASL_LEVEL_ALERT:
+            return @ASL_STRING_ALERT;
+            
+        case ASL_LEVEL_EMERG:
+            return @ASL_STRING_EMERG;
+            
+        default:
+            return @ASL_STRING_DEBUG;
     }
 }
 
