@@ -7,7 +7,7 @@
 //
 
 #import "TFAppDelegate.h"
-#import "TFLogger.h"
+#import <TFLogger/TFLogger.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
 
 //#define NSLog(...) NSLogToTFLoggerAdapter(__VA_ARGS__)

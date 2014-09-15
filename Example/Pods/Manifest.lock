@@ -24,6 +24,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaLumberjack: aadc76d7bd6c839ca84b38ed50cbf89d7cf8c693
   Kiwi: 54bece5b35564d9b8e03c608d926f1a22fcfc589
-  TFLogger: 2a95bc0e106ffab2ab9857d419655824455e63df
+  TFLogger: d9ee7e1deae7dc5a34d6250bef1015cb2fe05c55
 
 COCOAPODS: 0.33.1
