@@ -26,6 +26,7 @@
 #import "asl.h"
 
 typedef void (^TFLoggerHandler)(int level, NSString *location,  NSString *msg);
+// TODO: typedef dla handlerow
 
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();
@@ -42,6 +43,11 @@ TFLoggerHandler TFStdErrLogHandler();
  *  Apple System Log Facility handler, forwards logs to asl. These are the ones saved on device and displayed by Console.app
  *  This handler is not added to the TFLog streamline by default. In order to have your logs saved on device do the following in your appDelegate:
  *  TFLoggerAddHandler(TFASLLogHandler());
+ *  Default ASL log filter is set to display all messages except those with log levels DEBUG and INFO. That means:
+ *  - if you don't use NSLogToTFLoggerAdapter - ALL OF YOUR NSLogs WILL BE SENT TO DEVICE! (baceuse the default NSLog log level is ASL_LEVEL_ERR)
+ *  - if you DO use NSLogToTFLoggerAdapter (Recommended) - plain NSLog won't be sent to device log (log level would be DEBUG which is below filter line), except situations where explicitly set the log level using visual format to be ASL_LEVEL_WARNING or higher.
+ *  In case you want different ASL filtering policy please use @see asl_set_filter() on your behalf.
+ *  ATTENTION: TF_COMPILE_TIME_LOG_LEVEL has precedence over all the other log levels.
  */
 TFLoggerHandler TFASLLogHandler();
 
