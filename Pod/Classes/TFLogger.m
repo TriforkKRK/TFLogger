@@ -22,11 +22,13 @@
  */
 
 #import "TFLogger.h"
+#import <pthread.h>
 #import <CoreFoundation/CoreFoundation.h>
 //  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
 //  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
 
 NSMutableArray* _loggerHandlers();
+NSString * _nslogFormattedMessage(NSString * msg);
 
 void TFLoggerAddHandler(TFLoggerHandler handler)
 {
@@ -44,10 +46,10 @@ void TFLoggerRemoveAllHandlers()
 TFLoggerHandler TFStdErrLogHandler()
 {
     return ^(int level, NSString *msg) {
-        // TODO: format "%s %s[%i:%s] %s", timestamp, appName, processID, threadID, logMsg
-        CFStringRef s = CFStringCreateWithCString(NULL, [msg UTF8String], kCFStringEncodingUTF8);
+        NSString * formattedMsg = _nslogFormattedMessage(msg);
+        CFStringRef s = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
         CFShow(s);
-        // TODO: release
+        CFRelease(s);
     };
 }
 
@@ -74,6 +76,8 @@ void _TFLog(int level, const char * file, int line, NSString *format, ...)
     NSString * path = [NSString stringWithUTF8String:file];
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
+    
+    // TODO: level
     NSString * str = [NSString stringWithFormat:@"%@:%d - %@",[path lastPathComponent], line, message];
     
     va_end(argumentList);
@@ -81,6 +85,24 @@ void _TFLog(int level, const char * file, int line, NSString *format, ...)
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) {
         handler(level, str);
     }
+}
+
+NSString * _nslogFormattedMessage(NSString * msg)
+{
+    NSDate * d = [NSDate date];
+    time_t time = [d timeIntervalSince1970];
+    struct tm timeStruct;
+    localtime_r(&time, &timeStruct);
+    char buffer[80];
+    strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", &timeStruct);  // yyyy-MM-dd HH:mm:ss:SSS
+    NSTimeInterval epoch = [d timeIntervalSinceReferenceDate];
+    int milliseconds = (int)((epoch - floor(epoch)) * 1000);
+    NSString *dateStr = [NSString stringWithCString:buffer encoding:NSASCIIStringEncoding];
+    
+    NSString * appName = [[NSProcessInfo processInfo] processName];
+    NSString * processID = [NSString stringWithFormat:@"%i", (int)getpid()];
+    NSString * tid = [NSString stringWithFormat:@"%x", pthread_mach_thread_np(pthread_self())];
+    return [NSString stringWithFormat:@"%@:%03d %@[%@:%@] %@", dateStr, milliseconds, appName, processID, tid, msg]; // timestamp, appName, processID, threadID, logMsg
 }
 
 NSMutableArray *_loggerHandlers()

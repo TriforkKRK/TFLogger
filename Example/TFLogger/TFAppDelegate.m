@@ -10,7 +10,7 @@
 #import <TFLogger/TFLogger.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
 
-//#define NSLog(...) NSLogToTFLoggerAdapter(__VA_ARGS__)
+#define NSLog(...) NSLogToTFLoggerAdapter(__VA_ARGS__)
 
 //static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
