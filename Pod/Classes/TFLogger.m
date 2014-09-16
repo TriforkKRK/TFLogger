@@ -28,7 +28,7 @@
 //  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
 
 NSMutableArray* _loggerHandlers();
-NSString * _nslogFormattedPrefix();
+NSString * _nslogFormattedPrefix(BOOL excludeAppname);
 NSString * _levelDescription(int level);
 
 void TFLoggerAddHandler(TFLoggerHandler handler)
@@ -47,7 +47,7 @@ void TFLoggerRemoveAllHandlers()
 TFLoggerHandler TFStdErrLogHandler()
 {
     return ^(int level, NSString *location, NSString *msg) {
-        NSString * prefix = _nslogFormattedPrefix();
+        NSString * prefix = _nslogFormattedPrefix(YES);
         NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@ <%@> %@", prefix, location, _levelDescription(level), msg];
         CFStringRef s = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
         CFShow(s);
@@ -59,7 +59,7 @@ TFLoggerHandler TFStdErrLogHandler()
 TFLoggerHandler TFASLLogHandler()
 {
     return ^(int level, NSString *location, NSString *msg) {
-        // TODO: hange log level saved on device
+        // TODO: hange log level saved on device 
         NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@", location, msg];
         asl_log(NULL, NULL, level, "%s", [formattedMsg UTF8String]);
     };
@@ -119,7 +119,7 @@ NSString * _levelDescription(int level)
     }
 }
 
-NSString * _nslogFormattedPrefix()
+NSString * _nslogFormattedPrefix(BOOL excludeAppname)
 {
     NSDate * d = [NSDate date];
     time_t time = [d timeIntervalSince1970];
@@ -131,10 +131,13 @@ NSString * _nslogFormattedPrefix()
     int milliseconds = (int)((epoch - floor(epoch)) * 1000);
     NSString *dateStr = [NSString stringWithCString:buffer encoding:NSASCIIStringEncoding];
     
+    NSString * fmt = [NSString stringWithFormat:@"%@:%03d", dateStr, milliseconds];
+    if (excludeAppname) return fmt;
+    
     NSString * appName = [[NSProcessInfo processInfo] processName];
     NSString * processID = [NSString stringWithFormat:@"%i", (int)getpid()];
     NSString * tid = [NSString stringWithFormat:@"%x", pthread_mach_thread_np(pthread_self())];
-    return [NSString stringWithFormat:@"%@:%03d %@[%@:%@]", dateStr, milliseconds, appName, processID, tid]; // timestamp, appName, processID, threadID
+    return [NSString stringWithFormat:@"%@ %@[%@:%@]", fmt, appName, processID, tid]; // appName, processID, threadID
 }
 
 NSMutableArray *_loggerHandlers()
