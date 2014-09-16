@@ -44,26 +44,20 @@ void TFLoggerRemoveAllHandlers()
 
 #pragma mark - Default Log Handlers
 
-TFLoggerHandler TFStdErrLogHandler()
-{
-    return ^(int level, NSString *location, NSString *msg) {
-        NSString * prefix = _nslogFormattedPrefix(YES);
-        NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@ <%@> %@", prefix, location, _levelDescription(level), msg];
-        CFStringRef s = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
-        CFShow(s);
-        CFRelease(s);
-    };
-}
+TFLoggerHandler TFStdErrLogHandler =  ^(int level, NSString *location, NSString *msg) {
+    NSString * prefix = _nslogFormattedPrefix(YES);
+    NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@ <%@> %@", prefix, location, _levelDescription(level), msg];
+    CFStringRef s = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
+    CFShow(s);
+    CFRelease(s);
+};
 
-// http://stackoverflow.com/questions/13473864/use-asl-to-log-to-console-app
-TFLoggerHandler TFASLLogHandler()
-{
-    return ^(int level, NSString *location, NSString *msg) {
-        // TODO: hange log level saved on device 
-        NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@", location, msg];
-        asl_log(NULL, NULL, level, "%s", [formattedMsg UTF8String]);
-    };
-}
+// TODO: Console.app http://stackoverflow.com/questions/13473864/use-asl-to-log-to-console-app
+TFLoggerHandler TFASLLogHandler =  ^(int level, NSString *location, NSString *msg) {
+    // TODO: hange log level saved on device
+    NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@", location, msg];
+    asl_log(NULL, NULL, level, "%s", [formattedMsg UTF8String]);
+};
 
 
 #pragma mark - Private
@@ -81,7 +75,7 @@ void _TFLog(int level, const char * file, int line, NSString *format, ...)
                                                 arguments:argumentList];
     NSString * location = [NSString stringWithFormat:@"%@:%d",[path lastPathComponent], line];
     
-    for (TFLoggerHandler handler in [_loggerHandlers() copy]) {
+    for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
         handler(level, location, message);
     }
     va_end(argumentList);
@@ -145,7 +139,7 @@ NSMutableArray *_loggerHandlers()
     static NSMutableArray * blocks = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        blocks = [NSMutableArray arrayWithObject:TFStdErrLogHandler()]; // by default all logs are sent to StdErr to be displayed in XCode debug console
+        blocks = [NSMutableArray arrayWithObject:TFStdErrLogHandler]; // by default all logs are sent to StdErr to be displayed in XCode debug console
     });
     return blocks;
 }

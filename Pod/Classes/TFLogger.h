@@ -37,7 +37,7 @@ void TFLoggerRemoveAllHandlers();
  *  This handler is added to the TFLog streamline by default, so TFLogs are displayed by Xcode debugger.
  *  If you don't want your logs to be send to stderr use @see TFLoggerRemoveAllHandlers() in your appDelegate.
  */
-TFLoggerHandler TFStdErrLogHandler();
+TFLoggerHandler TFStdErrLogHandler;
 
 /**
  *  Apple System Log Facility handler, forwards logs to asl. These are the ones saved on device and displayed by Console.app
@@ -49,7 +49,7 @@ TFLoggerHandler TFStdErrLogHandler();
  *  In case you want different ASL filtering policy please use @see asl_set_filter() on your behalf.
  *  ATTENTION: TF_COMPILE_TIME_LOG_LEVEL has precedence over all the other log levels.
  */
-TFLoggerHandler TFASLLogHandler();
+TFLoggerHandler TFASLLogHandler;
 
 // One can define TF_COMPILE_TIME_LOG_LEVEL to set compile time log levels
 // all the log operations with levels that are below this setting will be converted to NOOP

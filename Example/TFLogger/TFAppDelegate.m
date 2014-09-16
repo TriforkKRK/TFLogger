@@ -23,7 +23,7 @@
 //    
 //    DDLogError(@"dd error");
  
-//    TFAddLoggerClousure(ASLClousure(), 1);
+    TFLoggerAddHandler(TFASLLogHandler);
     
     TFLogEmergency(@"emergency");
     TFLogAlert(@"alert");
