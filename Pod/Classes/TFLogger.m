@@ -47,9 +47,9 @@ void TFLoggerRemoveAllHandlers()
 TFLoggerHandler TFStdErrLogHandler =  ^(int level, NSString *location, NSString *msg) {
     NSString * prefix = _nslogFormattedPrefix(YES);
     NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@ <%@> %@", prefix, location, _levelDescription(level), msg];
-    CFStringRef s = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
-    CFShow(s);
-    CFRelease(s);
+    CFStringRef cfFormattedMsg = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
+    CFShow(cfFormattedMsg);
+    CFRelease(cfFormattedMsg);
 };
 
 // TODO: Console.app http://stackoverflow.com/questions/13473864/use-asl-to-log-to-console-app
