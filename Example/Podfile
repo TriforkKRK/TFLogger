@@ -1,9 +1,0 @@
-target 'TFLogger', :exclusive => true do
-  pod "TFLogger", :path => "../"
-end
-
-target 'Tests', :exclusive => true do
-  pod "TFLogger", :path => "../"
-
-  pod 'Kiwi'
-end
