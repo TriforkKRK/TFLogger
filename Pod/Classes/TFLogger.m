@@ -23,7 +23,6 @@
 
 #import "TFLogger.h"
 #import <pthread.h>
-#import <CoreFoundation/CoreFoundation.h>
 //  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
 //  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
 
@@ -54,7 +53,7 @@ TFLoggerHandler TFStdErrLogHandler =  ^(int level, NSString *location, NSString 
 
 // TODO: Console.app http://stackoverflow.com/questions/13473864/use-asl-to-log-to-console-app
 TFLoggerHandler TFASLLogHandler =  ^(int level, NSString *location, NSString *msg) {
-    // TODO: hange log level saved on device
+    // TODO: hang log level saved on device
     NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@", location, msg];
     asl_log(NULL, NULL, level, "%s", [formattedMsg UTF8String]);
 };

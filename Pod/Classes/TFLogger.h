@@ -26,7 +26,7 @@
 #import "asl.h"
 
 typedef void (^TFLoggerHandler)(int level, NSString *location,  NSString *msg);
-// TODO: typedef dla handlerow
+// TODO: typedef for handlers
 
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();
@@ -44,9 +44,10 @@ TFLoggerHandler TFStdErrLogHandler;
  *  This handler is not added to the TFLog streamline by default. In order to have your logs saved on device do the following in your appDelegate:
  *  TFLoggerAddHandler(TFASLLogHandler());
  *  Default ASL log filter is set to display all messages except those with log levels DEBUG and INFO. That means:
- *  - if you don't use NSLogToTFLoggerAdapter - ALL OF YOUR NSLogs WILL BE SENT TO DEVICE! (baceuse the default NSLog log level is ASL_LEVEL_ERR)
- *  - if you DO use NSLogToTFLoggerAdapter (Recommended) - plain NSLog won't be sent to device log (log level would be DEBUG which is below filter line), except situations where explicitly set the log level using visual format to be ASL_LEVEL_WARNING or higher.
- *  In case you want different ASL filtering policy please use @see asl_set_filter() on your behalf.
+ *  - if you don't use NSLogToTFLoggerAdapter - ALL OF YOUR NSLogs WILL BE SENT TO THE DEVICE! (because by default NSLog a log level is ASL_LEVEL_ERR)
+ *  - if you DO use NSLogToTFLoggerAdapter (Recommended) - plain NSLog won't be sent to the device log (log level would be DEBUG which is below the filter line), 
+ *  except situations where explicitly set the log level using visual format to be ASL_LEVEL_WARNING or higher.
+ *  In case you want a different ASL filtering policy please use @see asl_set_filter() on your behalf.
  *  ATTENTION: TF_COMPILE_TIME_LOG_LEVEL has precedence over all the other log levels.
  */
 TFLoggerHandler TFASLLogHandler;
@@ -78,12 +79,12 @@ TFLoggerHandler TFASLLogHandler;
 #pragma mark - NSLog visual format adapting
 
 /**
- *  NSLogToTFLoggerAdapter function may be used to swizzle default NSLog behaviour. To do so include the following line is your source code:
+ *  NSLogToTFLoggerAdapter function may be used to swizzle default NSLog behaviour. To do so include the following line in your source code:
  *  #define NSLog(...) NSLogToASLAdapter(__VA_ARGS__)
- *  this will cause the default NSLog statements to be forwarded to the @see _TFLog method whis is TFLoggers' entry point.
- *  Its behaviour will of course depend of TFLogger setup. By default it will cause your messages to be only shown in Xcode debugger.
- *  Additionaly if TFASLLogHandler is in use the the default log level of NSLog will be ASL_LEVEL_DEBUG instead of ASL_LEVEL_ERROR (which is a default for NSLog).
- *  Additionaly you can use visual log level formatting to change logging level. The syntax is like follows:
+ *  This will cause the default NSLog statements to be forwarded to the @see _TFLog method which is TFLoggers' entry point.
+ *  Its behaviour will of course depend on TFLogger setup. By default it will cause your messages to be only shown in Xcode debugger.
+ *  Additionally if TFASLLogHandler is in use the the default log level of NSLog will be ASL_LEVEL_DEBUG instead of ASL_LEVEL_ERROR (which is a default for NSLog).
+ *  Additionally you can use visual log level formatting to change logging level. The syntax is like follows:
  *
  *  NSLog(@"[m] something) - ASL_LEVEL_EMERG;
  *  NSLog(@"[a] something) - ASL_LEVEL_ALERT;
