@@ -17,9 +17,7 @@ Trifork logging library based on ASL. With this lib you can do the following:
 ## Simple usage
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
-In your source code include the librarary:
-#import <TFLogger/TFLogger.h>
-and use one of the logger methods:
+In your source code include the librarary and use one of the logger methods eg.:
 TFLogDebug(@"message");
 
 ## Forwarding output 
@@ -38,22 +36,22 @@ If you want to forward logs somewhere else, simply create your own lig handler a
 ## NSLog visial format
 
 NSLogToTFLoggerAdapter function may be used to swizzle default NSLog behaviour. To do so include the following line in your source code:
-#define NSLog(...) NSLogToASLAdapter(module_name, __VA_ARGS__)
+```
+    #define NSLog(...) NSLogToASLAdapter(module_name, __VA_ARGS__)
+```
 This will cause the default NSLog statements to be forwarded to the @see _TFLog method which is TFLoggers' entry point.
 Its behaviour will of course depend on TFLogger setup. By default it will cause your messages to be only shown in Xcode debugger.
 Additionally if TFASLLogHandler is in use the the default log level of NSLog will be ASL_LEVEL_DEBUG instead of ASL_LEVEL_ERROR (which is a default for NSLog).
 Additionally you can use visual log level formatting to change logging level. The syntax is like follows:
 
-```
-NSLog(@"[m] something) - ASL_LEVEL_EMERG;
-NSLog(@"[a] something) - ASL_LEVEL_ALERT;
-NSLog(@"[c] something) - ASL_LEVEL_CRIT;
-NSLog(@"[e] something) - ASL_LEVEL_ERR;
-NSLog(@"[w] something) - ASL_LEVEL_WARNING;
-NSLog(@"[n] something) - ASL_LEVEL_NOTICE;
-NSLog(@"[i] something) - ASL_LEVEL_INFO;
-NSLog(@"[d] something) - ASL_LEVEL_DEBUG;
-```
+    NSLog(@"[m] something) - ASL_LEVEL_EMERG;
+    NSLog(@"[a] something) - ASL_LEVEL_ALERT;
+    NSLog(@"[c] something) - ASL_LEVEL_CRIT;
+    NSLog(@"[e] something) - ASL_LEVEL_ERR;
+    NSLog(@"[w] something) - ASL_LEVEL_WARNING;
+    NSLog(@"[n] something) - ASL_LEVEL_NOTICE;
+    NSLog(@"[i] something) - ASL_LEVEL_INFO;
+    NSLog(@"[d] something) - ASL_LEVEL_DEBUG;
 
 ## Integration with other projects
 
