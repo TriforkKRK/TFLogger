@@ -52,6 +52,17 @@ void TFLoggerSetDefaultModuleName(NSString * name)
     moduleName = name;
 }
 
+static NSArray * whiteListModuleNames;
+void TFLoggerSetWhiteListModuleNames(NSArray * names)
+{
+    whiteListModuleNames = [names copy];
+}
+
+NSArray * TFLoggerWhiteListModuleNames()
+{
+    return whiteListModuleNames;
+}
+
 #pragma mark - Default Log Handlers
 
 TFLoggerHandler TFStdErrLogHandler =  ^(NSString * module, int level, NSString *location, NSString *msg) {
@@ -82,8 +93,9 @@ TFLoggerHandler TFASLLogHandler =  ^(NSString * module, int level, NSString *loc
 
 void _TFLog(int level, NSString * module, const char * file, int line, NSString *format, ...)
 {
-    // TODO: ??
     if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
+    NSString * moduleName = module.length > 0 ? module : TFLoggerDefaultModuleName();
+    if (TFLoggerWhiteListModuleNames() != nil && [TFLoggerWhiteListModuleNames() containsObject:moduleName] == NO) return;  // module not whitelisted
     
     va_list argumentList;
     va_start(argumentList, format);
@@ -92,10 +104,9 @@ void _TFLog(int level, NSString * module, const char * file, int line, NSString 
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
     NSString * location = [NSString stringWithFormat:@"%@:%d",[path lastPathComponent], line];
-    module = module.length > 0 ? module : TFLoggerDefaultModuleName();
     
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
-        handler(module, level, location, message);
+        handler(moduleName, level, location, message);
     }
     va_end(argumentList);
 }

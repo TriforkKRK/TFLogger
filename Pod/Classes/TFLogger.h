@@ -26,13 +26,15 @@
 #import "asl.h"
 
 typedef void (^TFLoggerHandler)(NSString * module, int level, NSString *location,  NSString *msg);
-// TODO: typedef for handlers
 
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();
 
 NSString * TFLoggerDefaultModuleName();
 void TFLoggerSetDefaultModuleName(NSString * name);
+
+NSArray * TFLoggerWhiteListModuleNames();
+void TFLoggerSetWhiteListModuleNames(NSArray * names);  // nil - whitelisting disabled, @[] - empty array - nothing is whitelisted
 
 #pragma mark - Predefined log handlers
 /**
@@ -104,10 +106,10 @@ TFLoggerHandler TFASLLogHandler;
     NSString *FRMT = _formatWithoutVisualLogLevelPrefix(format);\
     _TFLog(LOG_LEVEL, module_name, __FILE__, __LINE__, FRMT, ##__VA_ARGS__); \
 }
-// TODO: NSLogToStdErr, NSLogToASL
 
 
 #pragma mark - Privates used by macros
+
 int _extractLogLevelFromFormat(NSString *format);
 NSString * _formatWithoutVisualLogLevelPrefix(NSString *format);
 void _TFLog(int level, NSString * module, const char * file, int line, NSString *format, ...);

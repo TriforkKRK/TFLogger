@@ -17,6 +17,7 @@
 {
     TFLoggerAddHandler(TFASLLogHandler);
     TFLoggerSetDefaultModuleName(@"TFLoggerExamp");
+    TFLoggerSetWhiteListModuleNames(@[@"TFLoggerNSLog", @"TFLoggerExamp"]);
     
     TFLogEmergency(@"emergency");
     TFLogAlert(@"alert");
