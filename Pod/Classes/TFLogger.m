@@ -78,9 +78,7 @@ TFLoggerHandler TFStdErrLogHandler =  ^(NSString * module, int level, NSString *
     CFRelease(cfFormattedMsg);
 };
 
-// TODO: Console.app http://stackoverflow.com/questions/13473864/use-asl-to-log-to-console-app
 TFLoggerHandler TFASLLogHandler =  ^(NSString * module, int level, NSString *location, NSString *msg) {
-    // TODO: hang log level saved on device
     NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@", location, msg];
     asl_log(NULL, NULL, level, "%s", [formattedMsg UTF8String]);
 };
