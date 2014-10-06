@@ -3,7 +3,7 @@
 //  TFLogger
 //
 //  Created by CocoaPods on 09/11/2014.
-//  Copyright (c) 2014 krzysztof. All rights reserved.
+//  Copyright (c) 2014 Krzysztof Profic. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
