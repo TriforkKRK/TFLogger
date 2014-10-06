@@ -29,6 +29,9 @@
 NSMutableArray* _loggerHandlers();
 NSString * _nslogFormattedPrefix(BOOL excludeAppname);
 NSString * _levelDescription(int level);
+static NSString * _moduleName;
+static TFLoggerFiltering _passFilter;
+
 
 void TFLoggerAddHandler(TFLoggerHandler handler)
 {
@@ -41,27 +44,21 @@ void TFLoggerRemoveAllHandlers()
     [_loggerHandlers() removeAllObjects];
 }
 
-static NSString * moduleName;
 NSString * TFLoggerDefaultModuleName()
 {
-    return moduleName;
+    return _moduleName;
 }
 
 void TFLoggerSetDefaultModuleName(NSString * name)
 {
-    moduleName = name;
+    _moduleName = name;
 }
 
-static NSArray * whiteListModuleNames;
-void TFLoggerSetWhiteListModuleNames(NSArray * names)
+void TFLoggerSetFilter(TFLoggerFiltering passFilter)
 {
-    whiteListModuleNames = [names copy];
+    _passFilter = passFilter;
 }
 
-NSArray * TFLoggerWhiteListModuleNames()
-{
-    return whiteListModuleNames;
-}
 
 #pragma mark - Default Log Handlers
 
@@ -95,7 +92,6 @@ void _TFLog(int level, NSString * module, const char * file, int line, NSString 
 {
     if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
     NSString * moduleName = module.length > 0 ? module : TFLoggerDefaultModuleName();
-    if (TFLoggerWhiteListModuleNames() != nil && [TFLoggerWhiteListModuleNames() containsObject:moduleName] == NO) return;  // module not whitelisted
     
     va_list argumentList;
     va_start(argumentList, format);
@@ -104,6 +100,7 @@ void _TFLog(int level, NSString * module, const char * file, int line, NSString 
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
     NSString * location = [NSString stringWithFormat:@"%@:%d",[path lastPathComponent], line];
+    if (_passFilter && _passFilter(moduleName, level, location, message) == NO) return;
     
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
         handler(moduleName, level, location, message);

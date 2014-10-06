@@ -25,7 +25,8 @@
 #import <Foundation/Foundation.h>
 #import "asl.h"
 
-typedef void (^TFLoggerHandler)(NSString * module, int level, NSString *location,  NSString *msg);
+typedef void (^TFLoggerHandler)(NSString *module, int level, NSString *location,  NSString *msg);
+typedef BOOL (^TFLoggerFiltering)(NSString *module, int level, NSString *location, NSString *msg);
 
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();
@@ -33,8 +34,7 @@ void TFLoggerRemoveAllHandlers();
 NSString * TFLoggerDefaultModuleName();
 void TFLoggerSetDefaultModuleName(NSString * name);
 
-NSArray * TFLoggerWhiteListModuleNames();
-void TFLoggerSetWhiteListModuleNames(NSArray * names);  // nil - whitelisting disabled, @[] - empty array - nothing is whitelisted
+void TFLoggerSetFilter(TFLoggerFiltering passFilter);
 
 #pragma mark - Predefined log handlers
 /**
