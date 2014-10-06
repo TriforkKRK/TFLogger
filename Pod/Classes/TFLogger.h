@@ -31,6 +31,9 @@ typedef void (^TFLoggerHandler)(NSString * module, int level, NSString *location
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();
 
+NSString * TFLoggerDefaultModuleName();
+void TFLoggerSetDefaultModuleName(NSString * name);
+
 #pragma mark - Predefined log handlers
 /**
  *  Standard Error output handler, forwards logs to standard error file descriptor (STDERR_FILENO).

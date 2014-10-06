@@ -9,13 +9,14 @@
 #import "TFAppDelegate.h"
 #import <TFLogger/TFLogger.h>
 
-#define NSLog(...) NSLogToTFLoggerAdapter(@"TFLogger", __VA_ARGS__)
+#define NSLog(...) NSLogToTFLoggerAdapter(@"TFLoggerNSLog", __VA_ARGS__)
 
 @implementation TFAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     TFLoggerAddHandler(TFASLLogHandler);
+    TFLoggerSetDefaultModuleName(@"TFLoggerExamp");
     
     TFLogEmergency(@"emergency");
     TFLogAlert(@"alert");

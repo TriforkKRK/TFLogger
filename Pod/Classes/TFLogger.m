@@ -41,6 +41,17 @@ void TFLoggerRemoveAllHandlers()
     [_loggerHandlers() removeAllObjects];
 }
 
+static NSString * moduleName;
+NSString * TFLoggerDefaultModuleName()
+{
+    return moduleName;
+}
+
+void TFLoggerSetDefaultModuleName(NSString * name)
+{
+    moduleName = name;
+}
+
 #pragma mark - Default Log Handlers
 
 TFLoggerHandler TFStdErrLogHandler =  ^(NSString * module, int level, NSString *location, NSString *msg) {
@@ -81,6 +92,7 @@ void _TFLog(int level, NSString * module, const char * file, int line, NSString 
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
     NSString * location = [NSString stringWithFormat:@"%@:%d",[path lastPathComponent], line];
+    module = module.length > 0 ? module : TFLoggerDefaultModuleName();
     
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
         handler(module, level, location, message);
