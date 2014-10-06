@@ -43,16 +43,24 @@ void TFLoggerRemoveAllHandlers()
 
 #pragma mark - Default Log Handlers
 
-TFLoggerHandler TFStdErrLogHandler =  ^(int level, NSString *location, NSString *msg) {
+TFLoggerHandler TFStdErrLogHandler =  ^(NSString * module, int level, NSString *location, NSString *msg) {
     NSString * prefix = _nslogFormattedPrefix(YES);
-    NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@ <%@> %@", prefix, location, _levelDescription(level), msg];
+    NSString * prefixWithLocation;
+    if ([module length] > 0) {
+        prefixWithLocation = [NSString stringWithFormat:@"%@ [%@] %@", prefix, module, location];    // add module info
+    }
+    else {
+        prefixWithLocation = [NSString stringWithFormat:@"%@ %@", prefix, location];    // no module info
+    }
+    
+    NSString * formattedMsg = [NSString stringWithFormat:@"%@ <%@> %@", prefixWithLocation, _levelDescription(level), msg];
     CFStringRef cfFormattedMsg = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
     CFShow(cfFormattedMsg);
     CFRelease(cfFormattedMsg);
 };
 
 // TODO: Console.app http://stackoverflow.com/questions/13473864/use-asl-to-log-to-console-app
-TFLoggerHandler TFASLLogHandler =  ^(int level, NSString *location, NSString *msg) {
+TFLoggerHandler TFASLLogHandler =  ^(NSString * module, int level, NSString *location, NSString *msg) {
     // TODO: hang log level saved on device
     NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@", location, msg];
     asl_log(NULL, NULL, level, "%s", [formattedMsg UTF8String]);
@@ -61,7 +69,7 @@ TFLoggerHandler TFASLLogHandler =  ^(int level, NSString *location, NSString *ms
 
 #pragma mark - Private
 
-void _TFLog(int level, const char * file, int line, NSString *format, ...)
+void _TFLog(int level, NSString * module, const char * file, int line, NSString *format, ...)
 {
     // TODO: ??
     if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
@@ -75,7 +83,7 @@ void _TFLog(int level, const char * file, int line, NSString *format, ...)
     NSString * location = [NSString stringWithFormat:@"%@:%d",[path lastPathComponent], line];
     
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
-        handler(level, location, message);
+        handler(module, level, location, message);
     }
     va_end(argumentList);
 }

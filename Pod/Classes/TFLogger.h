@@ -25,7 +25,7 @@
 #import <Foundation/Foundation.h>
 #import "asl.h"
 
-typedef void (^TFLoggerHandler)(int level, NSString *location,  NSString *msg);
+typedef void (^TFLoggerHandler)(NSString * module, int level, NSString *location,  NSString *msg);
 // TODO: typedef for handlers
 
 void TFLoggerAddHandler(TFLoggerHandler handler);
@@ -66,21 +66,21 @@ TFLoggerHandler TFASLLogHandler;
 
 #pragma mark - Macros
 
-#define TFLogEmergency(format, ...)     _TFLog(ASL_LEVEL_EMERG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogAlert(format, ...)         _TFLog(ASL_LEVEL_ALERT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogCritical(format, ...)      _TFLog(ASL_LEVEL_CRIT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogError(format, ...)         _TFLog(ASL_LEVEL_ERR, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogWarning(format, ...)       _TFLog(ASL_LEVEL_WARNING, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogNotice(format, ...)        _TFLog(ASL_LEVEL_NOTICE, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogInfo(format, ...)          _TFLog(ASL_LEVEL_INFO, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogDebug(format, ...)         _TFLog(ASL_LEVEL_DEBUG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogEmergency(format, ...)     _TFLog(ASL_LEVEL_EMERG, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogAlert(format, ...)         _TFLog(ASL_LEVEL_ALERT, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogCritical(format, ...)      _TFLog(ASL_LEVEL_CRIT, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogError(format, ...)         _TFLog(ASL_LEVEL_ERR, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogWarning(format, ...)       _TFLog(ASL_LEVEL_WARNING, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogNotice(format, ...)        _TFLog(ASL_LEVEL_NOTICE, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogInfo(format, ...)          _TFLog(ASL_LEVEL_INFO, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogDebug(format, ...)         _TFLog(ASL_LEVEL_DEBUG, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
 
 
 #pragma mark - NSLog visual format adapting
 
 /**
  *  NSLogToTFLoggerAdapter function may be used to swizzle default NSLog behaviour. To do so include the following line in your source code:
- *  #define NSLog(...) NSLogToASLAdapter(__VA_ARGS__)
+ *  #define NSLog(...) NSLogToASLAdapter(module_name, __VA_ARGS__)
  *  This will cause the default NSLog statements to be forwarded to the @see _TFLog method which is TFLoggers' entry point.
  *  Its behaviour will of course depend on TFLogger setup. By default it will cause your messages to be only shown in Xcode debugger.
  *  Additionally if TFASLLogHandler is in use the the default log level of NSLog will be ASL_LEVEL_DEBUG instead of ASL_LEVEL_ERROR (which is a default for NSLog).
@@ -96,10 +96,10 @@ TFLoggerHandler TFASLLogHandler;
  *  NSLog(@"[d] something) - ASL_LEVEL_DEBUG;
  */
 
-#define NSLogToTFLoggerAdapter(format, ...) { \
+#define NSLogToTFLoggerAdapter(module_name, format, ...) { \
     int LOG_LEVEL = _extractLogLevelFromFormat(format); \
     NSString *FRMT = _formatWithoutVisualLogLevelPrefix(format);\
-    _TFLog(LOG_LEVEL, __FILE__, __LINE__, FRMT, ##__VA_ARGS__); \
+    _TFLog(LOG_LEVEL, module_name, __FILE__, __LINE__, FRMT, ##__VA_ARGS__); \
 }
 // TODO: NSLogToStdErr, NSLogToASL
 
@@ -107,4 +107,4 @@ TFLoggerHandler TFASLLogHandler;
 #pragma mark - Privates used by macros
 int _extractLogLevelFromFormat(NSString *format);
 NSString * _formatWithoutVisualLogLevelPrefix(NSString *format);
-void _TFLog(int level, const char * file, int line, NSString *format, ...);
+void _TFLog(int level, NSString * module, const char * file, int line, NSString *format, ...);
