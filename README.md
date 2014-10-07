@@ -16,13 +16,15 @@ With this lib you can do the following:
 
 ## Simple usage
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
-In your source code include the librarary and use one of the logger methods eg.:
+There is an example project where you can have a look at common use cases.
+To run example project clone the repo, and run `pod install` from the Example directory first.
+
+To start using TFLogger as logging tool in your own source code, first include the librarary header as you do with all the other libraries and then use one of the logger methods eg.:
 
     TFLogDebug(@"message");
 
 ## Forwarding output 
-Library forwards log messages by defaukt to the stdErr which is a channel displayed by Xcode' debugger. In order to have your logs saved via ASL to device log add predefined ASL handler:
+Library forwards log messages by default to the stdErr which is a channel displayed by Xcode' debugger. In order to have your logs saved via ASL to device log add predefined ASL handler:
 
     TFLoggerAddHandler(TFASLLogHandler());
 
@@ -56,9 +58,9 @@ The key feature here is NSLog visual formatting, which you can use to change log
 
 ## Integration with other projects
 
-TFLogger may be integrated with other projects using NSLog visual format. That means there won't be direct dependency to logging facility in your cocoapod library. Decision which logging framework one would like to use is postopned to a moment when you start using the library. At this time you can simply stay with default TFLogger implementation or easily forward all the logs to your favourite logging library eg. CocoaLumberjack using your own block handler.
+TFLogger may be integrated with other projects using NSLog visual format. That means there won't be direct dependency to logging facility in your cocoapod library. Decision which logging framework one would like to use is postopned to a moment when you actually start using the library. At this time you can simply stay with default TFLogger implementation or easily forward all the logs to your favourite logging library eg. CocoaLumberjack using your own block handler.
 
-In order to have this king of On Demand integration with TFLogger in your cocoapod library. Do the following:
+In order to have this kind of On Demand Integration with TFLogger in your cocoapod library - do the following:
 
 1. Use NSLog with log visual formatting across all your implementation files in a library you develop.
 2. Include the following in your Podspec: `s.prefix_header_contents = '#if NSLOG_TO_TFLOGGER_ENABLED', '#import <TFLogger/TFLogger.h>',  '#define NSLog(...) NSLogToTFLoggerAdapter(@"YourPodName", __VA_ARGS__)', '#endif'`
