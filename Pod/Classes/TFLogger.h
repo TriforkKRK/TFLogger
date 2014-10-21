@@ -25,8 +25,27 @@
 #import <Foundation/Foundation.h>
 #import "asl.h"
 
-typedef void (^TFLoggerHandler)(NSString *module, int level, NSString *location,  NSString *msg);
-typedef BOOL (^TFLoggerFiltering)(NSString *module, int level, NSString *location, NSString *msg);
+#pragma mark - Log description entity
+// Holds log metadata for one log message, passed to log handlers and filters
+// Can't use structs as ARC forbids using Objective-C types within.
+@interface TFLogDescription : NSObject
+
+@property (nonatomic, strong) NSString  *module;
+@property (nonatomic, assign) NSInteger level;
+@property (nonatomic, strong) NSString  *file;
+@property (nonatomic, assign) NSInteger line;
+@property (nonatomic, strong) NSString  *message;
+@property (nonatomic, strong) NSDate    *date;
+
++ (TFLogDescription *)withModule:(NSString *)module level:(NSInteger)level file:(NSString *)file line:(NSInteger)line message:(NSString *)message;
+
+@end
+
+
+#pragma mark - TFLogger setup
+
+typedef void (^TFLoggerHandler)(TFLogDescription *desc);
+typedef BOOL (^TFLoggerFiltering)(TFLogDescription *desc);
 
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();
@@ -35,6 +54,7 @@ NSString * TFLoggerDefaultModuleName();
 void TFLoggerSetDefaultModuleName(NSString * name);
 
 void TFLoggerSetFilter(TFLoggerFiltering passFilter);
+
 
 #pragma mark - Predefined log handlers
 /**

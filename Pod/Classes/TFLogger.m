@@ -28,10 +28,31 @@
 
 NSMutableArray* _loggerHandlers();
 NSString * _nslogFormattedPrefix(BOOL excludeAppname);
-NSString * _levelDescription(int level);
+NSString * _levelDescription(NSInteger level);
 static NSString * _moduleName;
 static TFLoggerFiltering _passFilter;
 
+
+#pragma mark - Log description entity
+
+@implementation TFLogDescription
+
++ (TFLogDescription *)withModule:(NSString *)module level:(NSInteger)level file:(NSString *)file line:(NSInteger)line message:(NSString *)message
+{
+    TFLogDescription *desc = [[TFLogDescription alloc] init];
+    desc.module  = module;
+    desc.level   = level;
+    desc.file    = file;
+    desc.line    = line;
+    desc.message = message;
+    desc.date    = [NSDate date];
+    
+    return desc;
+}
+@end
+
+
+#pragma mark - TFLogger setup
 
 void TFLoggerAddHandler(TFLoggerHandler handler)
 {
@@ -62,31 +83,33 @@ void TFLoggerSetFilter(TFLoggerFiltering passFilter)
 
 #pragma mark - Default Log Handlers
 
-TFLoggerHandler TFStdErrLogHandler =  ^(NSString * module, int level, NSString *location, NSString *msg) {
+TFLoggerHandler TFStdErrLogHandler =  ^(TFLogDescription *desc)
+{
     NSString * prefix = _nslogFormattedPrefix(YES);
     NSString * prefixWithLocation;
-    if ([module length] > 0) {
-        prefixWithLocation = [NSString stringWithFormat:@"%@ [%@] %@", prefix, module, location];    // add module info
+    if ([desc.module length] > 0) {
+        prefixWithLocation = [NSString stringWithFormat:@"%@ [%@] %@:%ld", prefix, desc.module, desc.file, desc.line];    // add module info
     }
     else {
-        prefixWithLocation = [NSString stringWithFormat:@"%@ %@", prefix, location];    // no module info
+        prefixWithLocation = [NSString stringWithFormat:@"%@ %@:%ld", prefix, desc.file, desc.line];    // no module info
     }
     
-    NSString * formattedMsg = [NSString stringWithFormat:@"%@ <%@> %@", prefixWithLocation, _levelDescription(level), msg];
+    NSString * formattedMsg = [NSString stringWithFormat:@"%@ <%@> %@", prefixWithLocation, _levelDescription(desc.level), desc.message];
     CFStringRef cfFormattedMsg = CFStringCreateWithCString(NULL, [formattedMsg UTF8String], kCFStringEncodingUTF8);
     CFShow(cfFormattedMsg);
     CFRelease(cfFormattedMsg);
 };
 
-TFLoggerHandler TFASLLogHandler =  ^(NSString * module, int level, NSString *location, NSString *msg) {
-    NSString * formattedMsg = [NSString stringWithFormat:@"%@ %@", location, msg];
-    asl_log(NULL, NULL, level, "%s", [formattedMsg UTF8String]);
+TFLoggerHandler TFASLLogHandler =  ^(TFLogDescription *desc)
+{
+    NSString * formattedMsg = [NSString stringWithFormat:@"%@:%ld %@", desc.file, desc.line, desc.message];
+    asl_log(NULL, NULL, (int)desc.level, "%s", [formattedMsg UTF8String]);
 };
 
 
 #pragma mark - Private
 
-void _TFLog(int level, NSString * module, const char * file, int line, NSString *format, ...)
+void _TFLog(int level, NSString *module, const char *file, int line, NSString *format, ...)
 {
     if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
     NSString * moduleName = module.length > 0 ? module : TFLoggerDefaultModuleName();
@@ -97,16 +120,17 @@ void _TFLog(int level, NSString * module, const char * file, int line, NSString 
     NSString * path = [NSString stringWithUTF8String:file];
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
-    NSString * location = [NSString stringWithFormat:@"%@:%d",[path lastPathComponent], line];
-    if (_passFilter && _passFilter(moduleName, level, location, message) == NO) return;
+    
+    TFLogDescription *desc = [TFLogDescription withModule:moduleName level:level file:[path lastPathComponent] line:line message:message];
+    if (_passFilter && _passFilter(desc) == NO) return;
     
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
-        handler(moduleName, level, location, message);
+        handler(desc);
     }
     va_end(argumentList);
 }
 
-NSString * _levelDescription(int level)
+NSString * _levelDescription(NSInteger level)
 {
     switch (level) {
         case ASL_LEVEL_DEBUG:
