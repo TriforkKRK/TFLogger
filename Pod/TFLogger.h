@@ -77,6 +77,7 @@ TFLoggerHandler TFStdErrLogHandler;
  */
 TFLoggerHandler TFASLLogHandler;
 
+
 // One can define TF_COMPILE_TIME_LOG_LEVEL to set compile time log levels
 // all the log operations with levels that are below this setting will be converted to NOOP
 // if not defined ASL_LEVEL_DEBUG is set on DEBUG and ASL_LEVEL_ERR on RELEASE.

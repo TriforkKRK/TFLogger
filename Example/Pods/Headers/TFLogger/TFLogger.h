@@ -1,1 +1,1 @@
-../../../../Pod/Classes/TFLogger.h
+../../../../Pod/TFLogger.h

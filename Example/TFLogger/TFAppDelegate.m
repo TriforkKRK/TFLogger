@@ -22,15 +22,26 @@
  */
 
 #import "TFAppDelegate.h"
-#import <TFLogger/TFLogger.h>
+#import <TFLogger/TFLoggerHandlerToCocoaLumberjackAdapter.h>
 
 #define NSLog(...) NSLogToTFLoggerAdapter(@"TFLoggerNSLog", __VA_ARGS__)
+
+static const int ddLogLevel = LOG_LEVEL_DEBUG;
 
 @implementation TFAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    TFLoggerAddHandler(TFASLLogHandler);
+//
+//    CocoaLumberjackAdapter:
+//    To enable CocoaLumberjack integration just uncomment the following 4 lines:
+//
+//    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+//    TFLoggerRemoveAllHandlers();
+//    TFLoggerAddHandler(CocoaLumberjackToTFLoggerHandlerAdapter);
+//    DDLogDebug(@"aaaa ddlog debug");
+//
+    
     TFLoggerSetDefaultModuleName(@"TFLoggerExamp");
     
     TFLogEmergency(@"emergency");

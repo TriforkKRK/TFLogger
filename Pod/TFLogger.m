@@ -23,6 +23,9 @@
 
 #import "TFLogger.h"
 #import <pthread.h>
+
+#import <CocoaLumberjack/CocoaLumberjack.h>
+
 //  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
 //  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
 
