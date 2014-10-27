@@ -65,6 +65,12 @@ void TFLoggerRemoveAllHandlers();
 NSString * TFLoggerDefaultModuleName();
 void TFLoggerSetDefaultModuleName(NSString * name);
 
+/**
+ *  The log message will only be processed if it has a log level that greater or equal to TFLoggerBaselineLevel and
+ *  when it will pass the filter specified by this function. It is by default not set which means - all messages will pass.
+ *  One can use filters strictly for debugging purposes - eg. to display only messages from specific module.
+ *  It can also be used to implement pass rule that are more advanced than simple log level to basine log level relationship.
+ */
 void TFLoggerSetFilter(TFLoggerFiltering passFilter);
 
 
