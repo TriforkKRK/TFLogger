@@ -25,6 +25,20 @@
 #import <Foundation/Foundation.h>
 #import "asl.h"
 
+/**
+ *  TFLogger allows you to do the following:
+ *
+ *  1. Use it as applicaiton wide logging facility (`TFLogDebug`, `TFLogError`, `...` macros)
+ *  Log messages with corresponding log levels will be printed directly into Xcode debug console and/or device console (ASL).
+ *
+ *  2. Swizzle NSLogs' default implementation and use it as dependency free logging utility for external modules or cocoapod libraries you develop.
+ *  Our NSLog implementation introduces log levels written using "visual format".
+ *
+ *  3. Implement your custom log handlers/adapters to forward messages to your desired destinations.
+ *  Eg. there is a CocoaLumberjack adapter available.
+ *
+ *  4. Use filters to debug only specific component you currently work on.
+ */
 
 #pragma mark - Macros
 
@@ -38,7 +52,7 @@
 #define TFLogDebug(format, ...)             _TFLog(ASL_LEVEL_DEBUG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
 
 
-#pragma mark - TFLogger setup
+#pragma mark - Setup
 
 @class TFLogDescription;
 typedef void (^TFLoggerHandler)  (TFLogDescription *desc);
@@ -103,7 +117,7 @@ NSInteger TFLoggerBaselineLevel();
 void TFLoggerSetBaselineLevel(NSInteger level);
 
 
-#pragma mark - NSLog visual format adapting
+#pragma mark - NSLog visual format
 
 /**
  *  NSLogToTFLoggerAdapter function may be used to swizzle default NSLog behaviour. To do so include the following line in your source code:
@@ -142,7 +156,7 @@ void TFLoggerSetBaselineLevel(NSInteger level);
 }
 
 
-#pragma mark - Privates used by macros
+#pragma mark - Privates
 
 int _extractLogLevelFromFormat(NSString *format);
 NSString * _formatWithoutVisualLogLevelPrefix(NSString *format);
