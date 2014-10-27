@@ -77,7 +77,7 @@ void TFLoggerSetDefaultModuleName(NSString * name)
 
 void TFLoggerSetFilter(TFLoggerFiltering passFilter)
 {
-    _passFilter = passFilter;
+    _passFilter = [passFilter copy];
 }
 
 
