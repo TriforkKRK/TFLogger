@@ -26,8 +26,10 @@
 #import "asl.h"
 
 #pragma mark - Log description entity
-// Holds log metadata for one log message, passed to log handlers and filters
-// Can't use structs as ARC forbids using Objective-C types within.
+/**
+ * Holds log metadata of one log message. It is passed to log handlers and filters as parameter
+ * We wasn't able to use structs as ARC forbids using Objective-C types within.
+ */
 @interface TFLogDescription : NSObject
 
 @property (nonatomic, strong) NSString  *module;
