@@ -127,6 +127,7 @@ TFLoggerHandler TFASLLogHandler;
  *  @param module_name - it is used to group log statements belonging to the same module/library.
  *  It is usually used when NSLogToTFLoggerAdapter is used to provide dependency free logging in cocoapod library.
  *  In this case module_name would be a name of cocoapod library. To read more about dependency free logging in modules/cocoapods see the README.md
+ *  This param is required - if you pass nil or empty string TFLoggerDefaultModuleName will be used.
  *
  *  @param format - NSLog like formatted message. Notice that you can use visual log level formatting to specify logging level.
  *  The syntax is like follows:
