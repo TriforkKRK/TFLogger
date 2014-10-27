@@ -23,21 +23,39 @@
 
 #import "TFLogger.h"
 #import <pthread.h>
-//  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
-//  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
 
-
-NSInteger _baselineLevel = ASL_LEVEL_ERR;
+/**
+ *  Implementaiton was inspired by:
+ *  http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
+ *
+ *  Apple "Logging Errirs and Warnings" documentation reference:
+ *  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
+ */
 
 pthread_mutex_t _loggingCriticalSectionMutex();
 NSMutableArray* _loggerHandlers();
 NSString * _nslogFormattedPrefix(BOOL excludeAppname);
 NSString * _levelDescription(NSInteger level);
+static NSInteger _baselineLevel = ASL_LEVEL_ERR;
 static NSString * _moduleName;
 static TFLoggerFiltering _passFilter;
 
 
 #pragma mark - Log description entity
+
+@interface TFLogDescription()
+
+@property (nonatomic, strong, readwrite) NSString  *module;
+@property (nonatomic, assign, readwrite) NSInteger level;
+@property (nonatomic, strong, readwrite) NSString  *file;
+@property (nonatomic, assign, readwrite) NSInteger line;
+@property (nonatomic, strong, readwrite) NSString  *message;
+@property (nonatomic, strong, readwrite) NSDate    *date;
+
+
++ (TFLogDescription *)withModule:(NSString *)module level:(NSInteger)level file:(NSString *)file line:(NSInteger)line message:(NSString *)message;
+
+@end
 
 @implementation TFLogDescription
 
@@ -56,7 +74,7 @@ static TFLoggerFiltering _passFilter;
 @end
 
 
-#pragma mark - TFLogger setup
+#pragma mark - Setup
 
 void TFLoggerAddHandler(TFLoggerHandler handler)
 {

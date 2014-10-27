@@ -163,18 +163,17 @@ NSString * _formatWithoutVisualLogLevelPrefix(NSString *format);
 void _TFLog(int level, NSString * module, const char * file, int line, NSString *format, ...);
 
 /**
- * Holds log metadata of one log message. It is passed to log handlers and filters as parameter
- * We wasn't able to use structs as ARC forbids using Objective-C types within.
+ *  Holds log metadata of one log message. It is passed to log handlers and filters as parameter
+ *  We wasn't able to use structs as ARC forbids using Objective-C types within.
  */
 @interface TFLogDescription : NSObject
 
-@property (nonatomic, strong) NSString  *module;
-@property (nonatomic, assign) NSInteger level;
-@property (nonatomic, strong) NSString  *file;
-@property (nonatomic, assign) NSInteger line;
-@property (nonatomic, strong) NSString  *message;
-@property (nonatomic, strong) NSDate    *date;
-
-+ (TFLogDescription *)withModule:(NSString *)module level:(NSInteger)level file:(NSString *)file line:(NSInteger)line message:(NSString *)message;
+@property (nonatomic, strong, readonly) NSString  *module;
+@property (nonatomic, assign, readonly) NSInteger level;
+@property (nonatomic, strong, readonly) NSString  *file;
+@property (nonatomic, assign, readonly) NSInteger line;
+@property (nonatomic, strong, readonly) NSString  *message;
+@property (nonatomic, strong, readonly) NSDate    *date;
 
 @end
+
