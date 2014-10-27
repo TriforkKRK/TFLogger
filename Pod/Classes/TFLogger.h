@@ -25,6 +25,19 @@
 #import <Foundation/Foundation.h>
 #import "asl.h"
 
+
+#pragma mark - Macros
+
+#define TFLogEmergency(format, ...)         _TFLog(ASL_LEVEL_EMERG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogAlert(format, ...)             _TFLog(ASL_LEVEL_ALERT,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogCritical(format, ...)          _TFLog(ASL_LEVEL_CRIT,      @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogError(format, ...)             _TFLog(ASL_LEVEL_ERR,       @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogWarning(format, ...)           _TFLog(ASL_LEVEL_WARNING,   @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogNotice(format, ...)            _TFLog(ASL_LEVEL_NOTICE,    @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogInfo(format, ...)              _TFLog(ASL_LEVEL_INFO,      @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogDebug(format, ...)             _TFLog(ASL_LEVEL_DEBUG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+
+
 #pragma mark - Log description entity
 /**
  * Holds log metadata of one log message. It is passed to log handlers and filters as parameter
@@ -106,18 +119,6 @@ TFLoggerHandler TFASLLogHandler;
  */
 NSInteger TFLoggerBaselineLevel();
 void TFLoggerSetBaselineLevel(NSInteger level);
-
-
-#pragma mark - Macros
-
-#define TFLogEmergency(format, ...)         _TFLog(ASL_LEVEL_EMERG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogAlert(format, ...)             _TFLog(ASL_LEVEL_ALERT,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogCritical(format, ...)          _TFLog(ASL_LEVEL_CRIT,      @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogError(format, ...)             _TFLog(ASL_LEVEL_ERR,       @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogWarning(format, ...)           _TFLog(ASL_LEVEL_WARNING,   @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogNotice(format, ...)            _TFLog(ASL_LEVEL_NOTICE,    @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogInfo(format, ...)              _TFLog(ASL_LEVEL_INFO,      @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogDebug(format, ...)             _TFLog(ASL_LEVEL_DEBUG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
 
 
 #pragma mark - NSLog visual format adapting
