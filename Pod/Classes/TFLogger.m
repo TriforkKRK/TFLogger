@@ -113,13 +113,13 @@ void _TFLog(int level, NSString *module, const char *file, int line, NSString *f
 {
     if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
     NSString * moduleName = module.length > 0 ? module : TFLoggerDefaultModuleName();
+    NSString * path = [NSString stringWithUTF8String:file];
     
     va_list argumentList;
     va_start(argumentList, format);
-    
-    NSString * path = [NSString stringWithUTF8String:file];
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
+    va_end(argumentList);
     
     TFLogDescription *desc = [TFLogDescription withModule:moduleName level:level file:[path lastPathComponent] line:line message:message];
     if (_passFilter && _passFilter(desc) == NO) return;
@@ -127,7 +127,6 @@ void _TFLog(int level, NSString *module, const char *file, int line, NSString *f
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
         handler(desc);
     }
-    va_end(argumentList);
 }
 
 NSString * _levelDescription(NSInteger level)
