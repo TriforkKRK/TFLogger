@@ -89,16 +89,17 @@ TFLoggerHandler TFStdErrLogHandler;
  */
 TFLoggerHandler TFASLLogHandler;
 
-// One can define TF_COMPILE_TIME_LOG_LEVEL to set compile time log levels
-// all the log operations with levels that are below this setting will be converted to NOOP
-// if not defined ASL_LEVEL_DEBUG is set on DEBUG and ASL_LEVEL_ERR on RELEASE.
-#ifndef TF_COMPILE_TIME_LOG_LEVEL
-    #if DEBUG
-        #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_DEBUG
-    #else
-        #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_ERR
-    #endif
-#endif
+/**
+ *  TFLoggerBaselineLevel is used by TFLogger to decide weather or not specific log should be processed
+ *  Messages with log levels that are below this setting will be stripped as soon as they reach @see _TFLog
+ *  By default it is set to be ASL_LEVEL_ERR which is usually a good choice for RELEASE configuration
+ *  You can change the value as desired. Eg. it is a common practice to do the following:
+ *  #ifdef DEBUG
+ *      TFLoggerSetBaselineLevel(ASL_LEVEL_DEBUG);
+ *  #endif
+ */
+NSInteger TFLoggerBaselineLevel();
+void TFLoggerSetBaselineLevel(NSInteger level);
 
 
 #pragma mark - Macros

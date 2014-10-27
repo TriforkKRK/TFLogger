@@ -26,6 +26,9 @@
 //  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
 //  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
 
+
+NSInteger _baselineLevel = ASL_LEVEL_ERR;
+
 NSMutableArray* _loggerHandlers();
 NSString * _nslogFormattedPrefix(BOOL excludeAppname);
 NSString * _levelDescription(NSInteger level);
@@ -80,6 +83,15 @@ void TFLoggerSetFilter(TFLoggerFiltering passFilter)
     _passFilter = [passFilter copy];
 }
 
+NSInteger TFLoggerBaselineLevel()
+{
+    return _baselineLevel;
+}
+
+void TFLoggerSetBaselineLevel(NSInteger level)
+{
+    _baselineLevel = level;
+}
 
 #pragma mark - Default Log Handlers
 
@@ -111,7 +123,7 @@ TFLoggerHandler TFASLLogHandler =  ^(TFLogDescription *desc)
 
 void _TFLog(int level, NSString *module, const char *file, int line, NSString *format, ...)
 {
-    if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
+    if (TFLoggerBaselineLevel() < level) return;
     NSString * moduleName = module.length > 0 ? module : TFLoggerDefaultModuleName();
     NSString * path = [NSString stringWithUTF8String:file];
     

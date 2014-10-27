@@ -30,6 +30,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    #ifdef DEBUG
+    TFLoggerSetBaselineLevel(ASL_LEVEL_DEBUG);
+    #endif
+    
     TFLoggerAddHandler(TFASLLogHandler);
     TFLoggerSetDefaultModuleName(@"TFLoggerExamp");
     
