@@ -103,14 +103,14 @@ TFLoggerHandler TFASLLogHandler;
 
 #pragma mark - Macros
 
-#define TFLogEmergency(format, ...)     _TFLog(ASL_LEVEL_EMERG, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogAlert(format, ...)         _TFLog(ASL_LEVEL_ALERT, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogCritical(format, ...)      _TFLog(ASL_LEVEL_CRIT, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogError(format, ...)         _TFLog(ASL_LEVEL_ERR, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogWarning(format, ...)       _TFLog(ASL_LEVEL_WARNING, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogNotice(format, ...)        _TFLog(ASL_LEVEL_NOTICE, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogInfo(format, ...)          _TFLog(ASL_LEVEL_INFO, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogDebug(format, ...)         _TFLog(ASL_LEVEL_DEBUG, @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogEmergency(format, ...)         _TFLog(ASL_LEVEL_EMERG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogAlert(format, ...)             _TFLog(ASL_LEVEL_ALERT,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogCritical(format, ...)          _TFLog(ASL_LEVEL_CRIT,      @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogError(format, ...)             _TFLog(ASL_LEVEL_ERR,       @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogWarning(format, ...)           _TFLog(ASL_LEVEL_WARNING,   @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogNotice(format, ...)            _TFLog(ASL_LEVEL_NOTICE,    @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogInfo(format, ...)              _TFLog(ASL_LEVEL_INFO,      @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogDebug(format, ...)             _TFLog(ASL_LEVEL_DEBUG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
 
 
 #pragma mark - NSLog visual format adapting
@@ -147,7 +147,7 @@ TFLoggerHandler TFASLLogHandler;
  */
 #define NSLogToTFLoggerAdapter(module_name, format, ...) { \
     int LOG_LEVEL = _extractLogLevelFromFormat(format); \
-    NSString *FRMT = _formatWithoutVisualLogLevelPrefix(format);\
+    NSString *FRMT = _formatWithoutVisualLogLevelPrefix(format); \
     _TFLog(LOG_LEVEL, module_name, __FILE__, __LINE__, FRMT, ##__VA_ARGS__); \
 }
 
