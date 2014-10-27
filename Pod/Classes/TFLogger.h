@@ -52,6 +52,16 @@ typedef BOOL (^TFLoggerFiltering)(TFLogDescription *desc);
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();
 
+/**
+ *  Module name can be used to group sets of log messages that come from different libraries.
+ *  This can be used to easily create a filter that will only display messages from specific module.
+ *  DefaultModuleName is used to mark all the log messages sent using TFLog[Emmergency, Alert, ...](format, ..) macros
+ *  as messages belonging to this module name. It's used for convenience - you don't have to specify module name
+ *  on every Log(..) call. As the log macros are ment to be used on application level (not library)
+ *  DefaultModuleName is usually used to set the name being your application name, this way one can 
+ *  differentiate applicaiton level messages from library/submodule logs.
+ *  To see how you can use module name in your submodules @see NSLogToTFLoggerAdapter.
+ */
 NSString * TFLoggerDefaultModuleName();
 void TFLoggerSetDefaultModuleName(NSString * name);
 
