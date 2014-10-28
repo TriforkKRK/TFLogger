@@ -25,11 +25,63 @@
 #import <Foundation/Foundation.h>
 #import "asl.h"
 
-typedef void (^TFLoggerHandler)(int level, NSString *location,  NSString *msg);
-// TODO: typedef for handlers
+/**
+ *  TFLogger allows you to do the following:
+ *
+ *  1. Use it as applicaiton wide logging facility (`TFLogDebug`, `TFLogError`, `...` macros)
+ *  Log messages with corresponding log levels will be printed directly into Xcode debug console and/or device console (ASL).
+ *
+ *  2. Swizzle NSLogs' default implementation and use it as dependency free logging utility for external modules or cocoapod libraries you develop.
+ *  Our NSLog implementation introduces log levels written using "visual format".
+ *
+ *  3. Implement your custom log handlers/adapters to forward messages to your desired destinations.
+ *  Eg. there is a CocoaLumberjack adapter available.
+ *
+ *  4. Use filters to debug only specific component you currently work on.
+ */
+
+#pragma mark - Macros
+
+#define TFLogEmergency(format, ...)         _TFLog(ASL_LEVEL_EMERG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogAlert(format, ...)             _TFLog(ASL_LEVEL_ALERT,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogCritical(format, ...)          _TFLog(ASL_LEVEL_CRIT,      @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogError(format, ...)             _TFLog(ASL_LEVEL_ERR,       @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogWarning(format, ...)           _TFLog(ASL_LEVEL_WARNING,   @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogNotice(format, ...)            _TFLog(ASL_LEVEL_NOTICE,    @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogInfo(format, ...)              _TFLog(ASL_LEVEL_INFO,      @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+#define TFLogDebug(format, ...)             _TFLog(ASL_LEVEL_DEBUG,     @"", __FILE__, __LINE__, (format), ##__VA_ARGS__)
+
+
+#pragma mark - Setup
+
+@class TFLogDescription;
+typedef void (^TFLoggerHandler)  (TFLogDescription *desc);
+typedef BOOL (^TFLoggerFiltering)(TFLogDescription *desc);
 
 void TFLoggerAddHandler(TFLoggerHandler handler);
 void TFLoggerRemoveAllHandlers();
+
+/**
+ *  Module name can be used to group sets of log messages that come from different libraries.
+ *  This can be used to easily create a filter that will only display messages from specific module.
+ *  DefaultModuleName is used to mark all the log messages sent using TFLog[Emmergency, Alert, ...](format, ..) macros
+ *  as messages belonging to this module name. It's used for convenience - you don't have to specify module name
+ *  on every Log(..) call. As the log macros are ment to be used on application level (not library)
+ *  DefaultModuleName is usually used to set the name being your application name, this way one can 
+ *  differentiate applicaiton level messages from library/submodule logs.
+ *  To see how you can use module name in your submodules @see NSLogToTFLoggerAdapter.
+ */
+NSString * TFLoggerDefaultModuleName();
+void TFLoggerSetDefaultModuleName(NSString * name);
+
+/**
+ *  The log message will only be processed if it has a log level that greater or equal to TFLoggerBaselineLevel and
+ *  when it will pass the filter specified by this function. It is by default not set which means - all messages will pass.
+ *  One can use filters strictly for debugging purposes - eg. to display only messages from specific module.
+ *  It can also be used to implement pass rule that are more advanced than simple log level to basine log level relationship.
+ */
+void TFLoggerSetFilter(TFLoggerFiltering passFilter);
+
 
 #pragma mark - Predefined log handlers
 /**
@@ -52,39 +104,37 @@ TFLoggerHandler TFStdErrLogHandler;
  */
 TFLoggerHandler TFASLLogHandler;
 
-// One can define TF_COMPILE_TIME_LOG_LEVEL to set compile time log levels
-// all the log operations with levels that are below this setting will be converted to NOOP
-// if not defined ASL_LEVEL_DEBUG is set on DEBUG and ASL_LEVEL_ERR on RELEASE.
-#ifndef TF_COMPILE_TIME_LOG_LEVEL
-    #if DEBUG
-        #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_DEBUG
-    #else
-        #define TF_COMPILE_TIME_LOG_LEVEL ASL_LEVEL_ERR
-    #endif
-#endif
+/**
+ *  TFLoggerBaselineLevel is used by TFLogger to decide weather or not specific log should be processed
+ *  Messages with log levels that are below this setting will be stripped as soon as they reach @see _TFLog
+ *  By default it is set to be ASL_LEVEL_ERR which is usually a good choice for RELEASE configuration
+ *  You can change the value as desired. Eg. it is a common practice to do the following:
+ *  #ifdef DEBUG
+ *      TFLoggerSetBaselineLevel(ASL_LEVEL_DEBUG);
+ *  #endif
+ */
+NSInteger TFLoggerBaselineLevel();
+void TFLoggerSetBaselineLevel(NSInteger level);
 
 
-#pragma mark - Macros
-
-#define TFLogEmergency(format, ...)     _TFLog(ASL_LEVEL_EMERG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogAlert(format, ...)         _TFLog(ASL_LEVEL_ALERT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogCritical(format, ...)      _TFLog(ASL_LEVEL_CRIT, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogError(format, ...)         _TFLog(ASL_LEVEL_ERR, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogWarning(format, ...)       _TFLog(ASL_LEVEL_WARNING, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogNotice(format, ...)        _TFLog(ASL_LEVEL_NOTICE, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogInfo(format, ...)          _TFLog(ASL_LEVEL_INFO, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-#define TFLogDebug(format, ...)         _TFLog(ASL_LEVEL_DEBUG, __FILE__, __LINE__, (format), ##__VA_ARGS__)
-
-
-#pragma mark - NSLog visual format adapting
+#pragma mark - NSLog visual format
 
 /**
  *  NSLogToTFLoggerAdapter function may be used to swizzle default NSLog behaviour. To do so include the following line in your source code:
- *  #define NSLog(...) NSLogToASLAdapter(__VA_ARGS__)
- *  This will cause the default NSLog statements to be forwarded to the @see _TFLog method which is TFLoggers' entry point.
- *  Its behaviour will of course depend on TFLogger setup. By default it will cause your messages to be only shown in Xcode debugger.
- *  Additionally if TFASLLogHandler is in use the the default log level of NSLog will be ASL_LEVEL_DEBUG instead of ASL_LEVEL_ERROR (which is a default for NSLog).
- *  Additionally you can use visual log level formatting to change logging level. The syntax is like follows:
+ *  #define NSLog(...) NSLogToASLAdapter(module_name, __VA_ARGS__)
+ *  This will cause the default NSLog statements to be forwarded to the @see _TFLog method which is the TFLoggers' entry point.
+ *  Its' behaviour will of course depend on TFLogger setup.
+ *  By default it will cause your future NSLog messages to be only shown in Xcode debugger.
+ *  INFO: this technique is meant to be used as a dependency free logging tool for submodules/cocoapod libraries.
+ *  In case you want to use TFLogger on application level please refer to TFLogDebug, TFLogInfo
+ *
+ *  @param module_name - it is used to group log statements belonging to the same module/library.
+ *  It is usually used when NSLogToTFLoggerAdapter is used to provide dependency free logging in cocoapod library.
+ *  In this case module_name would be a name of cocoapod library. To read more about dependency free logging in modules/cocoapods see the README.md
+ *  This param is required - if you pass nil or empty string TFLoggerDefaultModuleName will be used.
+ *
+ *  @param format - NSLog like formatted message. Notice that you can use visual log level formatting to specify logging level.
+ *  The syntax is like follows:
  *
  *  NSLog(@"[m] something) - ASL_LEVEL_EMERG;
  *  NSLog(@"[a] something) - ASL_LEVEL_ALERT;
@@ -94,17 +144,36 @@ TFLoggerHandler TFASLLogHandler;
  *  NSLog(@"[n] something) - ASL_LEVEL_NOTICE;
  *  NSLog(@"[i] something) - ASL_LEVEL_INFO;
  *  NSLog(@"[d] something) - ASL_LEVEL_DEBUG;
+ *
+ *  IMPORTANT: NSLog log messages backed by NSLogToTFLoggerAdapter will have different logging level by default.
+ *  Normally NSLog is set up by Apple to send logs with ASL_LEVEL_ERROR. NSLogToTFLoggerAdapter changes that default be ASL_LEVEL_DEBUG.
+ *  That means - in case a log level is not explicitly specified using the above visual format, it will be set to ASL_LEVEL_DEBUG.
  */
-
-#define NSLogToTFLoggerAdapter(format, ...) { \
+#define NSLogToTFLoggerAdapter(module_name, format, ...) { \
     int LOG_LEVEL = _extractLogLevelFromFormat(format); \
-    NSString *FRMT = _formatWithoutVisualLogLevelPrefix(format);\
-    _TFLog(LOG_LEVEL, __FILE__, __LINE__, FRMT, ##__VA_ARGS__); \
+    NSString *FRMT = _formatWithoutVisualLogLevelPrefix(format); \
+    _TFLog(LOG_LEVEL, module_name, __FILE__, __LINE__, FRMT, ##__VA_ARGS__); \
 }
-// TODO: NSLogToStdErr, NSLogToASL
 
 
-#pragma mark - Privates used by macros
+#pragma mark - Privates
+
 int _extractLogLevelFromFormat(NSString *format);
 NSString * _formatWithoutVisualLogLevelPrefix(NSString *format);
-void _TFLog(int level, const char * file, int line, NSString *format, ...);
+void _TFLog(int level, NSString * module, const char * file, int line, NSString *format, ...);
+
+/**
+ *  Holds log metadata of one log message. It is passed to log handlers and filters as parameter
+ *  We wasn't able to use structs as ARC forbids using Objective-C types within.
+ */
+@interface TFLogDescription : NSObject
+
+@property (nonatomic, strong, readonly) NSString  *module;
+@property (nonatomic, assign, readonly) NSInteger level;
+@property (nonatomic, strong, readonly) NSString  *file;
+@property (nonatomic, assign, readonly) NSInteger line;
+@property (nonatomic, strong, readonly) NSString  *message;
+@property (nonatomic, strong, readonly) NSDate    *date;
+
+@end
+
