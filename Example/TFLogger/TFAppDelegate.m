@@ -32,6 +32,13 @@ static const int ddLogLevel = LOG_LEVEL_DEBUG;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#ifdef DEBUG
+    TFLoggerSetBaselineLevel(ASL_LEVEL_DEBUG);
+#endif
+    
+    TFLoggerAddHandler(TFASLLogHandler);
+    TFLoggerSetDefaultModuleName(@"TFLoggerExamp");
+    
 //
 //    CocoaLumberjackAdapter:
 //    To enable CocoaLumberjack integration just uncomment the following 4 lines:
@@ -41,8 +48,6 @@ static const int ddLogLevel = LOG_LEVEL_DEBUG;
 //    TFLoggerAddHandler(CocoaLumberjackToTFLoggerHandlerAdapter);
 //    DDLogDebug(@"aaaa ddlog debug");
 //
-    
-    TFLoggerSetDefaultModuleName(@"TFLoggerExamp");
     
     TFLogEmergency(@"emergency");
     TFLogAlert(@"alert");

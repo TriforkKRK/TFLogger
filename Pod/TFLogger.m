@@ -24,19 +24,38 @@
 #import "TFLogger.h"
 #import <pthread.h>
 
-#import <CocoaLumberjack/CocoaLumberjack.h>
+/**
+ *  Implementaiton was inspired by:
+ *  http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
+ *
+ *  Apple "Logging Errirs and Warnings" documentation reference:
+ *  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
+ */
 
-//  Based on http://doing-it-wrong.mikeweller.com/2012/07/youre-doing-it-wrong-1-nslogdebug-ios.html
-//  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
-
+pthread_mutex_t _loggingCriticalSectionMutex();
 NSMutableArray* _loggerHandlers();
 NSString * _nslogFormattedPrefix(BOOL excludeAppname);
 NSString * _levelDescription(NSInteger level);
+static NSInteger _baselineLevel = ASL_LEVEL_ERR;
 static NSString * _moduleName;
 static TFLoggerFiltering _passFilter;
 
 
 #pragma mark - Log description entity
+
+@interface TFLogDescription()
+
+@property (nonatomic, strong, readwrite) NSString  *module;
+@property (nonatomic, assign, readwrite) NSInteger level;
+@property (nonatomic, strong, readwrite) NSString  *file;
+@property (nonatomic, assign, readwrite) NSInteger line;
+@property (nonatomic, strong, readwrite) NSString  *message;
+@property (nonatomic, strong, readwrite) NSDate    *date;
+
+
++ (TFLogDescription *)withModule:(NSString *)module level:(NSInteger)level file:(NSString *)file line:(NSInteger)line message:(NSString *)message;
+
+@end
 
 @implementation TFLogDescription
 
@@ -55,7 +74,7 @@ static TFLoggerFiltering _passFilter;
 @end
 
 
-#pragma mark - TFLogger setup
+#pragma mark - Setup
 
 void TFLoggerAddHandler(TFLoggerHandler handler)
 {
@@ -70,19 +89,44 @@ void TFLoggerRemoveAllHandlers()
 
 NSString * TFLoggerDefaultModuleName()
 {
-    return _moduleName;
+    NSString * name;
+    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(&loggingCriticalSection);
+    name = _moduleName;
+    pthread_mutex_unlock(&loggingCriticalSection);
+    return name;
 }
 
 void TFLoggerSetDefaultModuleName(NSString * name)
 {
-    _moduleName = name;
+    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(&loggingCriticalSection);
+    _moduleName = [name copy];
+    pthread_mutex_unlock(&loggingCriticalSection);
 }
 
 void TFLoggerSetFilter(TFLoggerFiltering passFilter)
 {
-    _passFilter = passFilter;
+    _passFilter = [passFilter copy];
 }
 
+NSInteger TFLoggerBaselineLevel()
+{
+    NSInteger level;
+    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(&loggingCriticalSection);
+    level = _baselineLevel;
+    pthread_mutex_unlock(&loggingCriticalSection);
+    return level;
+}
+
+void TFLoggerSetBaselineLevel(NSInteger level)
+{
+    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(&loggingCriticalSection);
+    _baselineLevel = level;
+    pthread_mutex_unlock(&loggingCriticalSection);
+}
 
 #pragma mark - Default Log Handlers
 
@@ -114,15 +158,19 @@ TFLoggerHandler TFASLLogHandler =  ^(TFLogDescription *desc)
 
 void _TFLog(int level, NSString *module, const char *file, int line, NSString *format, ...)
 {
-    if (TF_COMPILE_TIME_LOG_LEVEL < level) return;
+    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(&loggingCriticalSection);
+    
+    if (TFLoggerBaselineLevel() < level) return;
+    
     NSString * moduleName = module.length > 0 ? module : TFLoggerDefaultModuleName();
+    NSString * path = [NSString stringWithUTF8String:file];
     
     va_list argumentList;
     va_start(argumentList, format);
-    
-    NSString * path = [NSString stringWithUTF8String:file];
     NSString * message = [[NSString alloc] initWithFormat:format
                                                 arguments:argumentList];
+    va_end(argumentList);
     
     TFLogDescription *desc = [TFLogDescription withModule:moduleName level:level file:[path lastPathComponent] line:line message:message];
     if (_passFilter && _passFilter(desc) == NO) return;
@@ -130,7 +178,21 @@ void _TFLog(int level, NSString *module, const char *file, int line, NSString *f
     for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
         handler(desc);
     }
-    va_end(argumentList);
+    
+    pthread_mutex_unlock(&loggingCriticalSection);
+}
+
+pthread_mutex_t _loggingCriticalSectionMutex()
+{
+    static pthread_mutex_t mutex;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        pthread_mutexattr_t m_attr;
+        pthread_mutexattr_init(&m_attr);
+        pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
+        pthread_mutex_init(&mutex, &m_attr);
+    });
+    return mutex;
 }
 
 NSString * _levelDescription(NSInteger level)
