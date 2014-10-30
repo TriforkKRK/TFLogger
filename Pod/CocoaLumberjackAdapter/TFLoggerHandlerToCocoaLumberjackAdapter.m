@@ -18,6 +18,7 @@ TFLoggerHandler CocoaLumberjackToTFLoggerHandlerAdapter =  ^(TFLogDescription *d
             break;
             
         case ASL_LEVEL_INFO:
+        case ASL_LEVEL_NOTICE:
             level = LOG_LEVEL_INFO;
             flag  = LOG_FLAG_INFO;
             break;
@@ -35,7 +36,6 @@ TFLoggerHandler CocoaLumberjackToTFLoggerHandlerAdapter =  ^(TFLogDescription *d
             flag  = LOG_FLAG_ERROR;
             break;
             
-        case ASL_LEVEL_NOTICE:
         default:
             level = ASL_LEVEL_DEBUG;
             flag  = LOG_FLAG_DEBUG;
