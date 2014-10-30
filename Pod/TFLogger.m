@@ -33,12 +33,12 @@
  */
 
 pthread_mutex_t _loggingCriticalSectionMutex();
-NSMutableArray* _loggerHandlers();
+NSMutableArray* _currentLogHandlers();
 NSString * _nslogFormattedPrefix(BOOL excludeAppname);
 NSString * _levelDescription(NSInteger level);
 static NSInteger _baselineLevel = ASL_LEVEL_ERR;
 static NSString * _moduleName;
-static TFLoggerFiltering _passFilter;
+static TFLoggerLogFilter _passFilter;
 
 
 #pragma mark - Log description entity
@@ -76,15 +76,15 @@ static TFLoggerFiltering _passFilter;
 
 #pragma mark - Setup
 
-void TFLoggerAddHandler(TFLoggerHandler handler)
+void TFLoggerAddLogHandler(TFLoggerLogHandler logHandler)
 {
-    NSMutableArray * loggers = _loggerHandlers();
-    [loggers addObject:[handler copy]];
+    NSMutableArray * loggers = _currentLogHandlers();
+    [loggers addObject:[logHandler copy]];
 }
 
-void TFLoggerRemoveAllHandlers()
+void TFLoggerRemoveAllLogHandlers()
 {
-    [_loggerHandlers() removeAllObjects];
+    [_currentLogHandlers() removeAllObjects];
 }
 
 NSString * TFLoggerDefaultModuleName()
@@ -105,7 +105,7 @@ void TFLoggerSetDefaultModuleName(NSString * name)
     pthread_mutex_unlock(&loggingCriticalSection);
 }
 
-void TFLoggerSetFilter(TFLoggerFiltering passFilter)
+void TFLoggerSetFilter(TFLoggerLogFilter passFilter)
 {
     _passFilter = [passFilter copy];
 }
@@ -130,7 +130,7 @@ void TFLoggerSetBaselineLevel(NSInteger level)
 
 #pragma mark - Default Log Handlers
 
-TFLoggerHandler TFStdErrLogHandler =  ^(TFLogDescription *desc)
+TFLoggerLogHandler TFStdErrLogHandler =  ^(TFLogDescription *desc)
 {
     NSString * prefix = _nslogFormattedPrefix(YES);
     NSString * prefixWithLocation;
@@ -147,7 +147,7 @@ TFLoggerHandler TFStdErrLogHandler =  ^(TFLogDescription *desc)
     CFRelease(cfFormattedMsg);
 };
 
-TFLoggerHandler TFASLLogHandler =  ^(TFLogDescription *desc)
+TFLoggerLogHandler TFASLLogHandler =  ^(TFLogDescription *desc)
 {
     NSString * formattedMsg = [NSString stringWithFormat:@"%@:%ld %@", desc.file, desc.line, desc.message];
     asl_log(NULL, NULL, (int)desc.level, "%s", [formattedMsg UTF8String]);
@@ -175,8 +175,8 @@ void _TFLog(int level, NSString *module, const char *file, int line, NSString *f
     TFLogDescription *desc = [TFLogDescription withModule:moduleName level:level file:[path lastPathComponent] line:line message:message];
     if (_passFilter && _passFilter(desc) == NO) return;
     
-    for (TFLoggerHandler handler in [_loggerHandlers() copy]) { // copied to iterate over immutable
-        handler(desc);
+    for (TFLoggerLogHandler logHandler in [_currentLogHandlers() copy]) { // copied to iterate over immutable
+        logHandler(desc);
     }
     
     pthread_mutex_unlock(&loggingCriticalSection);
@@ -248,7 +248,7 @@ NSString * _nslogFormattedPrefix(BOOL excludeAppname)
     return [NSString stringWithFormat:@"%@ %@[%@:%@]", fmt, appName, processID, tid]; // appName, processID, threadID
 }
 
-NSMutableArray *_loggerHandlers()
+NSMutableArray *_currentLogHandlers()
 {
     static NSMutableArray * blocks = nil;
     static dispatch_once_t onceToken;
