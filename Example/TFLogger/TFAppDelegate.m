@@ -36,7 +36,7 @@ static const int ddLogLevel = LOG_LEVEL_DEBUG;
     TFLoggerSetBaselineLevel(ASL_LEVEL_DEBUG);
 #endif
     
-    TFLoggerAddHandler(TFASLLogHandler);
+    TFLoggerAddLogHandler(TFASLLogHandler);
     TFLoggerSetDefaultModuleName(@"TFLoggerExamp");
     
 //
