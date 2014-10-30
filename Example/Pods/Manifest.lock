@@ -10,7 +10,9 @@ PODS:
   - Kiwi (2.3.0)
   - TFLogger (0.0.1):
     - TFLogger/CocoaLumberjackAdapter
+    - TFLogger/NSLogVisualFormat
   - TFLogger/CocoaLumberjackAdapter (0.0.1)
+  - TFLogger/NSLogVisualFormat (0.0.1)
 
 DEPENDENCIES:
   - CocoaLumberjack
@@ -25,6 +27,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaLumberjack: 55c22a2b8bde7a29c568ab4015b5874216524d70
   Kiwi: 54bece5b35564d9b8e03c608d926f1a22fcfc589
-  TFLogger: 82ff2e569dbcc1ba11c138a7d37e4da8a0e327dd
+  TFLogger: becf8773eab7d6aa99d8d1e0c05fd999e9fb3f33
 
 COCOAPODS: 0.33.1

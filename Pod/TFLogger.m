@@ -258,32 +258,3 @@ NSMutableArray *_loggerHandlers()
     return blocks;
 }
 
-int _extractLogLevelFromFormat(NSString *format)
-{
-    if ([format rangeOfString:@"[m]"].location != NSNotFound) return ASL_LEVEL_EMERG;
-    if ([format rangeOfString:@"[a]"].location != NSNotFound) return ASL_LEVEL_ALERT;
-    if ([format rangeOfString:@"[c]"].location != NSNotFound) return ASL_LEVEL_CRIT;
-    if ([format rangeOfString:@"[e]"].location != NSNotFound) return ASL_LEVEL_ERR;
-    if ([format rangeOfString:@"[w]"].location != NSNotFound) return ASL_LEVEL_WARNING;
-    if ([format rangeOfString:@"[n]"].location != NSNotFound) return ASL_LEVEL_NOTICE;
-    if ([format rangeOfString:@"[i]"].location != NSNotFound) return ASL_LEVEL_INFO;
-    if ([format rangeOfString:@"[d]"].location != NSNotFound) return ASL_LEVEL_DEBUG;
-    
-    return ASL_LEVEL_DEBUG; // if not specified return the lowest log level - DEBUG
-}
-
-NSString * _formatWithoutVisualLogLevelPrefix(NSString *format)
-{
-    NSString * unprefixedFormat = format;
-    NSUInteger loc = [format rangeOfString:@"]"].location;
-    if (loc != NSNotFound) {
-        unprefixedFormat = [format substringFromIndex:loc+1];
-    }
-    
-    NSMutableCharacterSet * whitespaceSet = [NSMutableCharacterSet whitespaceCharacterSet];
-    loc = [unprefixedFormat rangeOfCharacterFromSet:[whitespaceSet invertedSet]].location;
-
-    if (loc == NSNotFound) return unprefixedFormat;
-    
-    return [unprefixedFormat substringFromIndex:loc];
-}
