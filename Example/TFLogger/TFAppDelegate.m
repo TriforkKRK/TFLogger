@@ -34,7 +34,7 @@
     TFLoggerSetBaselineLevel(ASL_LEVEL_DEBUG);
     #endif
     
-    TFLoggerAddHandler(TFASLLogHandler);
+    TFLoggerAddLogHandler(TFASLLogHandler);
     TFLoggerSetDefaultModuleName(@"TFLoggerExamp");
     
     TFLogEmergency(@"emergency");
