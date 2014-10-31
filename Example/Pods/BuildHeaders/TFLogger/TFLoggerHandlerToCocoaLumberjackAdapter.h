@@ -1,0 +1,1 @@
+../../../../Pod/CocoaLumberjackAdapter/TFLoggerHandlerToCocoaLumberjackAdapter.h
