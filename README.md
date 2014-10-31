@@ -62,7 +62,7 @@ NSLog is a nice tool, it is part of `Foundation` framework and because of that i
 
 To address the above issues TFLogger is able to swizzle default NSLog implementation.
 To do so include the following line in your source code:
-`#define NSLog(...) NSLogToASLAdapter(module_name, __VA_ARGS__)`
+`#define NSLog(...) NSLogToTFLoggerAdapter(module_name, __VA_ARGS__)`
 
 This will cause the default NSLog statements to be forwarded to the `_TFLog` method which is TFLoggers' entry point.
 Its behaviour will of course depend on TFLogger setup. By default it will cause your messages to be only shown in Xcode debugger.
@@ -89,7 +89,7 @@ TFLogger may be integrated with other modules used by your app using NSLog visua
 In order to have this kind of On Demand Integration with TFLogger in your cocoapod library - do the following:
 
 1. Use NSLog with log visual formatting across all your implementation files in a library you develop.
-2. Include the following in your Podspec: `s.prefix_header_contents = '#if NSLOG_TO_TFLOGGER_ENABLED', '#import <TFLogger/TFLogger.h>',  '#define NSLog(...) NSLogToTFLoggerAdapter(@"YourPodName", __VA_ARGS__)', '#endif'`
+2. Include the following in your Podspec: `s.prefix_header_contents = '#if NSLOG_TO_TFLOGGER_ENABLED', '#import <TFLogger/NSLogVisualFormat.h>',  '#define NSLog(...) NSLogToTFLoggerAdapter(@"YourPodName", __VA_ARGS__)', '#endif'`
 3. That's it. Now clients of your library are able to optionally turn on TFLogger integration, have your logs delivered with appropriate log levels and decide what to do with them.
 
 In order to take advantage of a library that has TFLogger integration do the following:

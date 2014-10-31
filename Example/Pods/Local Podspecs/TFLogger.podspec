@@ -16,4 +16,9 @@ Pod::Spec.new do |s|
   s.subspec 'CocoaLumberjackAdapter' do |sub|
     sub.source_files = 'Pod/CocoaLumberjackAdapter/*.{m,h}'
   end
+
+  s.subspec 'NSLogVisualFormat' do |sub|
+    sub.source_files = 'Pod/NSLogVisualFormat/*.{m,h}'
+  end
+
 end
