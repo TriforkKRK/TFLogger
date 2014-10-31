@@ -9,4 +9,4 @@
 #import <TFLogger/TFLogger.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
 
-TFLoggerHandler CocoaLumberjackToTFLoggerHandlerAdapter;
+TFLoggerLogHandler TFCocoaLumberjackHandler;

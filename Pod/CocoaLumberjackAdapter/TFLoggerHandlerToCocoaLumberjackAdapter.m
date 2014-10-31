@@ -8,7 +8,7 @@
 
 #import "TFLoggerHandlerToCocoaLumberjackAdapter.h"
 
-TFLoggerHandler CocoaLumberjackToTFLoggerHandlerAdapter =  ^(TFLogDescription *desc)
+TFLoggerLogHandler TFCocoaLumberjackHandler =  ^(TFLogDescription *desc)
 {
     int level, flag;
     switch (desc.level) {

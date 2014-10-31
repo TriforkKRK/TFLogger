@@ -45,8 +45,8 @@ static const int ddLogLevel = LOG_LEVEL_DEBUG;
 //    To enable CocoaLumberjack integration just uncomment the following 4 lines:
 //
 //    [DDLog addLogger:[DDTTYLogger sharedInstance]];
-//    TFLoggerRemoveAllHandlers();
-//    TFLoggerAddHandler(CocoaLumberjackToTFLoggerHandlerAdapter);
+//    TFLoggerRemoveAllLogHandlers();
+//    TFLoggerAddLogHandler(TFCocoaLumberjackHandler);
 //    DDLogDebug(@"aaaa ddlog debug");
 //
     
