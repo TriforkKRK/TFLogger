@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
   s.requires_arc     = true
   s.source_files     = 'Pod/*.{h,m}'
 
-  s.subspec 'CocoaLumberjackAdapter' do |sub|
-    sub.source_files = 'Pod/CocoaLumberjackAdapter/*.{m,h}'
+  s.subspec 'CocoaLumberjackHandler' do |sub|
+    sub.source_files = 'Pod/CocoaLumberjackHandler/*.{m,h}'
   end
 
   s.subspec 'NSLogVisualFormat' do |sub|

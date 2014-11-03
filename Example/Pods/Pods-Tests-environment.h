@@ -18,11 +18,11 @@
 #define COCOAPODS_VERSION_MINOR_TFLogger 0
 #define COCOAPODS_VERSION_PATCH_TFLogger 1
 
-// TFLogger/CocoaLumberjackAdapter
-#define COCOAPODS_POD_AVAILABLE_TFLogger_CocoaLumberjackAdapter
-#define COCOAPODS_VERSION_MAJOR_TFLogger_CocoaLumberjackAdapter 0
-#define COCOAPODS_VERSION_MINOR_TFLogger_CocoaLumberjackAdapter 0
-#define COCOAPODS_VERSION_PATCH_TFLogger_CocoaLumberjackAdapter 1
+// TFLogger/CocoaLumberjackHandler
+#define COCOAPODS_POD_AVAILABLE_TFLogger_CocoaLumberjackHandler
+#define COCOAPODS_VERSION_MAJOR_TFLogger_CocoaLumberjackHandler 0
+#define COCOAPODS_VERSION_MINOR_TFLogger_CocoaLumberjackHandler 0
+#define COCOAPODS_VERSION_PATCH_TFLogger_CocoaLumberjackHandler 1
 
 // TFLogger/NSLogVisualFormat
 #define COCOAPODS_POD_AVAILABLE_TFLogger_NSLogVisualFormat

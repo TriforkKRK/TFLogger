@@ -22,8 +22,8 @@
  */
 
 #import "TFAppDelegate.h"
-#import <TFLogger/TFLogger+NSLogVisualFormat.h>
-#import <TFLogger/TFLoggerHandlerToCocoaLumberjackAdapter.h>
+#import <TFLogger/NSLogVisualFormat.h>
+#import <TFLogger/TFCocoaLumberjackHandler.h>
 
 #define NSLog(...) NSLogToTFLoggerAdapter(@"TFLoggerNSLog", __VA_ARGS__)
 

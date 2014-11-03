@@ -6,7 +6,7 @@
 //
 //
 
-#import "TFLoggerHandlerToCocoaLumberjackAdapter.h"
+#import "TFCocoaLumberjackHandler.h"
 
 TFLoggerLogHandler TFCocoaLumberjackHandler =  ^(TFLogDescription *desc)
 {
