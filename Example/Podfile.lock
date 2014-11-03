@@ -1,0 +1,37 @@
+PODS:
+  - CocoaLumberjack (2.0.0-beta3):
+    - CocoaLumberjack/Default
+    - CocoaLumberjack/Extensions
+  - CocoaLumberjack/Core (2.0.0-beta3)
+  - CocoaLumberjack/Default (2.0.0-beta3):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Extensions (2.0.0-beta3):
+    - CocoaLumberjack/Default
+  - Kiwi (2.3.0)
+  - TFLogger (0.0.1):
+    - TFLogger/CocoaLumberjackHandler
+    - TFLogger/Core
+    - TFLogger/NSLogVisualFormat
+  - TFLogger/CocoaLumberjackHandler (0.0.1):
+    - CocoaLumberjack
+    - TFLogger/Core
+  - TFLogger/Core (0.0.1)
+  - TFLogger/NSLogVisualFormat (0.0.1):
+    - TFLogger/Core
+
+DEPENDENCIES:
+  - CocoaLumberjack
+  - Kiwi
+  - TFLogger (from `../`)
+  - TFLogger (from `../TFLogger.podspec`)
+
+EXTERNAL SOURCES:
+  TFLogger:
+    :path: ../
+
+SPEC CHECKSUMS:
+  CocoaLumberjack: 55c22a2b8bde7a29c568ab4015b5874216524d70
+  Kiwi: 54bece5b35564d9b8e03c608d926f1a22fcfc589
+  TFLogger: c5f626ecd005334791b89faccd61ccaae21938bf
+
+COCOAPODS: 0.33.1
