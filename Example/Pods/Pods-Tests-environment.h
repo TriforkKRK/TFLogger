@@ -6,6 +6,30 @@
 // project.
 
 
+// CocoaLumberjack
+#define COCOAPODS_POD_AVAILABLE_CocoaLumberjack
+#define COCOAPODS_VERSION_MAJOR_CocoaLumberjack 2
+#define COCOAPODS_VERSION_MINOR_CocoaLumberjack 0
+#define COCOAPODS_VERSION_PATCH_CocoaLumberjack 0
+
+// CocoaLumberjack/Core
+#define COCOAPODS_POD_AVAILABLE_CocoaLumberjack_Core
+#define COCOAPODS_VERSION_MAJOR_CocoaLumberjack_Core 2
+#define COCOAPODS_VERSION_MINOR_CocoaLumberjack_Core 0
+#define COCOAPODS_VERSION_PATCH_CocoaLumberjack_Core 0
+
+// CocoaLumberjack/Default
+#define COCOAPODS_POD_AVAILABLE_CocoaLumberjack_Default
+#define COCOAPODS_VERSION_MAJOR_CocoaLumberjack_Default 2
+#define COCOAPODS_VERSION_MINOR_CocoaLumberjack_Default 0
+#define COCOAPODS_VERSION_PATCH_CocoaLumberjack_Default 0
+
+// CocoaLumberjack/Extensions
+#define COCOAPODS_POD_AVAILABLE_CocoaLumberjack_Extensions
+#define COCOAPODS_VERSION_MAJOR_CocoaLumberjack_Extensions 2
+#define COCOAPODS_VERSION_MINOR_CocoaLumberjack_Extensions 0
+#define COCOAPODS_VERSION_PATCH_CocoaLumberjack_Extensions 0
+
 // Kiwi
 #define COCOAPODS_POD_AVAILABLE_Kiwi
 #define COCOAPODS_VERSION_MAJOR_Kiwi 2
@@ -23,6 +47,12 @@
 #define COCOAPODS_VERSION_MAJOR_TFLogger_CocoaLumberjackHandler 0
 #define COCOAPODS_VERSION_MINOR_TFLogger_CocoaLumberjackHandler 0
 #define COCOAPODS_VERSION_PATCH_TFLogger_CocoaLumberjackHandler 1
+
+// TFLogger/Core
+#define COCOAPODS_POD_AVAILABLE_TFLogger_Core
+#define COCOAPODS_VERSION_MAJOR_TFLogger_Core 0
+#define COCOAPODS_VERSION_MINOR_TFLogger_Core 0
+#define COCOAPODS_VERSION_PATCH_TFLogger_Core 1
 
 // TFLogger/NSLogVisualFormat
 #define COCOAPODS_POD_AVAILABLE_TFLogger_NSLogVisualFormat

@@ -135,10 +135,10 @@ TFLoggerLogHandler TFStdErrLogHandler =  ^(TFLogDescription *desc)
     NSString * prefix = _nslogFormattedPrefix(YES);
     NSString * prefixWithLocation;
     if ([desc.module length] > 0) {
-        prefixWithLocation = [NSString stringWithFormat:@"%@ [%@] %@:%ld", prefix, desc.module, desc.file, desc.line];    // add module info
+        prefixWithLocation = [NSString stringWithFormat:@"%@ [%@] %@:%ld", prefix, desc.module, desc.file, (long)desc.line];    // add module info
     }
     else {
-        prefixWithLocation = [NSString stringWithFormat:@"%@ %@:%ld", prefix, desc.file, desc.line];    // no module info
+        prefixWithLocation = [NSString stringWithFormat:@"%@ %@:%ld", prefix, desc.file, (long)desc.line];    // no module info
     }
     
     NSString * formattedMsg = [NSString stringWithFormat:@"%@ <%@> %@", prefixWithLocation, _levelDescription(desc.level), desc.message];
@@ -149,7 +149,7 @@ TFLoggerLogHandler TFStdErrLogHandler =  ^(TFLogDescription *desc)
 
 TFLoggerLogHandler TFASLLogHandler =  ^(TFLogDescription *desc)
 {
-    NSString * formattedMsg = [NSString stringWithFormat:@"%@:%ld %@", desc.file, desc.line, desc.message];
+    NSString * formattedMsg = [NSString stringWithFormat:@"%@:%ld %@", desc.file, (long)desc.line, desc.message];
     asl_log(NULL, NULL, (int)desc.level, "%s", [formattedMsg UTF8String]);
 };
 
