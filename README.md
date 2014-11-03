@@ -17,14 +17,21 @@ Eg. there is a CocoaLumberjack adapter available.
 
 
 TFLogger is very useful to categorize logged information according to the level of importance they convey. It enables you to do that by using the following macro definitions:
-`TFLogEmergency` &nbsp;&nbsp;&nbsp;- The highest priority, usually reserved for catastrophic failures and reboot notices
+`TFLogEmergency` &nbsp;&nbsp;&nbsp;- The highest priority, usually reserved for catastrophic failures and reboot notices.
+
 `TFLogAlert` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-  A serious failure in a key system.
+
 `TFLogCritical` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- A failure in a key system.
+
 `TFLogError` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Something has failed.
+
 `TFLogWarning` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Something is amiss and might fail if not corrected.
+
 `TFLogNotice` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Things of moderate interest to the user or administrator.
+
 `TFLogInfo` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- The lowest priority that you would normally log, and purely informational in nature.
-`TFLogDebug` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- The lowest priority, and normally not logged except for messages from the kernel.
+
+`TFLogDebug` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- The lowest priority, and normally not logged except for messages from the kernel. 
 
 
 The log level can be adjusted at any time using `TFLoggerSetBaselineLevel(NSInteger level)`.
