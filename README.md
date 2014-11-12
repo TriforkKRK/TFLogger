@@ -139,6 +139,9 @@ TFLogger is available through [CocoaPods](http://cocoapods.org). To install it, 
 
 ## Changelog
 
+### 1.0.1
+- Fixed CocoaLumberjack dependency to point to ~> 1.9
+
 ### 1.0
 - Initial release
 - CocoaLumberjack adapter
