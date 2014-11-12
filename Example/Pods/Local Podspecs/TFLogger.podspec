@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "TFLogger"
-  s.version          = "0.0.1"
+  s.version          = "1.0.0"
   s.summary          = "Dependency free logging library."
   s.description      = "Logging library that you can use to have dependency free logs in your other cocoapod libraries. One can implement a custom log handler or use wither a default implementation or CocoaLumberjack handler."
   s.homepage         = "https://github.com/TriforkKRK/TFLogger"
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'CocoaLumberjackHandler' do |sub|
     sub.source_files = 'Pod/CocoaLumberjackHandler/*.{m,h}'
-    sub.dependency 'CocoaLumberjack'
+    sub.dependency 'CocoaLumberjack', '~> 1.9'
     sub.dependency 'TFLogger/Core'
   end
 
