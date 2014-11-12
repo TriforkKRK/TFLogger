@@ -7,6 +7,6 @@
 //
 
 #import <TFLogger/TFLogger.h>
-#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <CocoaLumberjack/DDLog.h>
 
 TFLoggerLogHandler TFCocoaLumberjackHandler;

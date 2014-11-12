@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'CocoaLumberjackHandler' do |sub|
     sub.source_files = 'Pod/CocoaLumberjackHandler/*.{m,h}'
-    sub.dependency 'CocoaLumberjack'
+    sub.dependency 'CocoaLumberjack', '~> 1.9'
     sub.dependency 'TFLogger/Core'
   end
 
