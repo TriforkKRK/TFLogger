@@ -32,7 +32,7 @@
  *  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpsystemstartup/chapters/LoggingErrorsAndWarnings.html
  */
 
-pthread_mutex_t _loggingCriticalSectionMutex();
+pthread_mutex_t* _loggingCriticalSectionMutex();
 NSMutableArray* _currentLogHandlers();
 NSString * _nslogFormattedPrefix(BOOL excludeAppname);
 NSString * _levelDescription(NSInteger level);
@@ -90,19 +90,19 @@ void TFLoggerRemoveAllLogHandlers()
 NSString * TFLoggerDefaultModuleName()
 {
     NSString * name;
-    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
-    pthread_mutex_lock(&loggingCriticalSection);
+    pthread_mutex_t* loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(loggingCriticalSection);
     name = _moduleName;
-    pthread_mutex_unlock(&loggingCriticalSection);
+    pthread_mutex_unlock(loggingCriticalSection);
     return name;
 }
 
 void TFLoggerSetDefaultModuleName(NSString * name)
 {
-    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
-    pthread_mutex_lock(&loggingCriticalSection);
+    pthread_mutex_t* loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(loggingCriticalSection);
     _moduleName = [name copy];
-    pthread_mutex_unlock(&loggingCriticalSection);
+    pthread_mutex_unlock(loggingCriticalSection);
 }
 
 void TFLoggerSetFilter(TFLoggerLogFilter passFilter)
@@ -113,19 +113,19 @@ void TFLoggerSetFilter(TFLoggerLogFilter passFilter)
 NSInteger TFLoggerBaselineLevel()
 {
     NSInteger level;
-    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
-    pthread_mutex_lock(&loggingCriticalSection);
+    pthread_mutex_t* loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(loggingCriticalSection);
     level = _baselineLevel;
-    pthread_mutex_unlock(&loggingCriticalSection);
+    pthread_mutex_unlock(loggingCriticalSection);
     return level;
 }
 
 void TFLoggerSetBaselineLevel(NSInteger level)
 {
-    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
-    pthread_mutex_lock(&loggingCriticalSection);
+    pthread_mutex_t* loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(loggingCriticalSection);
     _baselineLevel = level;
-    pthread_mutex_unlock(&loggingCriticalSection);
+    pthread_mutex_unlock(loggingCriticalSection);
 }
 
 #pragma mark - Default Log Handlers
@@ -158,8 +158,8 @@ TFLoggerLogHandler TFASLLogHandler =  ^(TFLogDescription *desc)
 
 void _TFLog(int level, NSString *module, const char *file, int line, NSString *format, ...)
 {
-    pthread_mutex_t loggingCriticalSection = _loggingCriticalSectionMutex();
-    pthread_mutex_lock(&loggingCriticalSection);
+    pthread_mutex_t* loggingCriticalSection = _loggingCriticalSectionMutex();
+    pthread_mutex_lock(loggingCriticalSection);
     
     if (TFLoggerBaselineLevel() < level) return;
     
@@ -179,10 +179,10 @@ void _TFLog(int level, NSString *module, const char *file, int line, NSString *f
         logHandler(desc);
     }
     
-    pthread_mutex_unlock(&loggingCriticalSection);
+    pthread_mutex_unlock(loggingCriticalSection);
 }
 
-pthread_mutex_t _loggingCriticalSectionMutex()
+pthread_mutex_t* _loggingCriticalSectionMutex()
 {
     static pthread_mutex_t mutex;
     static dispatch_once_t onceToken;
@@ -192,7 +192,7 @@ pthread_mutex_t _loggingCriticalSectionMutex()
         pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
         pthread_mutex_init(&mutex, &m_attr);
     });
-    return mutex;
+    return &mutex;
 }
 
 NSString * _levelDescription(NSInteger level)
@@ -200,10 +200,10 @@ NSString * _levelDescription(NSInteger level)
     switch (level) {
         case ASL_LEVEL_DEBUG:
             return @ASL_STRING_DEBUG;
-
+            
         case ASL_LEVEL_INFO:
             return @ASL_STRING_INFO;
-        
+            
         case ASL_LEVEL_NOTICE:
             return @ASL_STRING_NOTICE;
             
