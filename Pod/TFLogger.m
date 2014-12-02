@@ -161,7 +161,10 @@ void _TFLog(int level, NSString *module, const char *file, int line, NSString *f
     pthread_mutex_t* loggingCriticalSection = _loggingCriticalSectionMutex();
     pthread_mutex_lock(loggingCriticalSection);
     
-    if (TFLoggerBaselineLevel() < level) return;
+    if (TFLoggerBaselineLevel() < level) {
+        pthread_mutex_unlock(loggingCriticalSection);
+        return;
+    }
     
     NSString * moduleName = module.length > 0 ? module : TFLoggerDefaultModuleName();
     NSString * path = [NSString stringWithUTF8String:file];
@@ -173,7 +176,10 @@ void _TFLog(int level, NSString *module, const char *file, int line, NSString *f
     va_end(argumentList);
     
     TFLogDescription *desc = [TFLogDescription withModule:moduleName level:level file:[path lastPathComponent] line:line message:message];
-    if (_passFilter && _passFilter(desc) == NO) return;
+    if (_passFilter && _passFilter(desc) == NO) {
+        pthread_mutex_unlock(loggingCriticalSection);
+        return;
+    }
     
     for (TFLoggerLogHandler logHandler in [_currentLogHandlers() copy]) { // copied to iterate over immutable
         logHandler(desc);
