@@ -139,6 +139,9 @@ TFLogger is available through [CocoaPods](http://cocoapods.org). To install it, 
 
 ## Changelog
 
+### 1.0.3
+- Bugfix on multithreading
+
 ### 1.0.2
 - Fixed locking issue that occured on iOS7 devices
 
